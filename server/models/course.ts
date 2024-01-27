@@ -10,6 +10,7 @@ interface IReview extends Document {
     user: object;
     rating: number;
     comment: string;
+    reviewReplies: { user: object; comment: string }[];
 }
 
 interface ILink extends Document {
