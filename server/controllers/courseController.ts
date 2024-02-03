@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary"
-import { createCourseService, getAllCoursesService, getCourseByIdService, updateCourseService } from "../services/course";
+import { createCourseService, getAllCoursesService, getAllCoursesServiceFull, getCourseByIdService, updateCourseService } from "../services/course";
 import { redis } from "../utils/redis";
 import courseModel from "../models/course";
+import notificationModel from "../models/notification";
 
 export const createCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -147,6 +148,12 @@ export const answerQuestion = CatchAsyncError(async (req: Request, res: Response
         const question = content?.questions?.find((ques: any) => ques._id === questionId);
         question?.commentReplies?.push(newAnswer)
         await course?.save();
+        if (req.user?._Id === question?.user._id) {
+            await notificationModel.create({
+                title: "New Reply To Your Question",
+                message: "Hi, there is a new reply to your question."
+            })
+        }
         res.status(200).json({
             success: true,
             course
@@ -186,6 +193,7 @@ export const addReview = CatchAsyncError(async (req: Request, res: Response, nex
             title: 'New Review Received',
             description: `${req.user?.name} has given a review in ${course?.name}`
         }
+        await notificationModel.create(notification)
         res.status(200).json({
             success: true,
             course
@@ -222,5 +230,29 @@ export const addReviewReply = CatchAsyncError(async (req: Request, res: Response
         })
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500))
+    }
+})
+
+export const getAllCoursesFull = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        getAllCoursesServiceFull(res)
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500))
+    }
+})
+
+export const deleteCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params
+        const user = await courseModel.findById(id)
+        if (!user)
+            return next(new ErrorHandler("No such course exists.", 401))
+        await courseModel.findByIdAndDelete(id)
+        await redis.del(id)
+        res.status(201).json({
+            success: true,
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
     }
 })

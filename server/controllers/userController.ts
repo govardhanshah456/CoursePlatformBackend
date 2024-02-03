@@ -9,7 +9,7 @@ import sendMail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
 import bcrypt from "bcryptjs"
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user";
+import { getAllUsersService, getUserById } from "../services/user";
 import cloudinary from "cloudinary";
 require("dotenv").config()
 interface IRegistrationBody {
@@ -308,6 +308,51 @@ export const updateAvatar = CatchAsyncError(async (req: Request, res: Response, 
         res.status(200).json({
             success: true,
             user
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
+    }
+})
+
+export const getAllUsers = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        getAllUsersService(res);
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
+    }
+})
+
+interface IUpdateUserRole {
+    id: string,
+    role: string
+}
+export const updateUserRole = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role } = req.body as IUpdateUserRole
+        const user = await userModel.findById(id)
+        if (!user)
+            return next(new ErrorHandler("No such user exists.", 401))
+        user.role = role
+        await user?.save();
+        res.status(201).json({
+            success: true,
+            user
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
+    }
+})
+
+export const deleteUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params
+        const user = await userModel.findById(id)
+        if (!user)
+            return next(new ErrorHandler("No such user exists.", 401))
+        await userModel.findByIdAndDelete(id)
+        await redis.del(id)
+        res.status(201).json({
+            success: true,
         })
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 401))

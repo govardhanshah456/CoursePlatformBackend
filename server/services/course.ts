@@ -42,3 +42,11 @@ export const getAllCoursesService = CatchAsyncError(async (req: Request, res: Re
         course
     })
 })
+
+export const getAllCoursesServiceFull = async (res: Response) => {
+    const user = await courseModel.find();
+    res.status(200).json({
+        success: true,
+        user
+    })
+}

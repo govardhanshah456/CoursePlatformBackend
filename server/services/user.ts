@@ -8,3 +8,11 @@ export const getUserById = async (id: string, res: Response) => {
         user
     })
 }
+
+export const getAllUsersService = async (res: Response) => {
+    const user = await userModel.find();
+    res.status(200).json({
+        success: true,
+        user
+    })
+}

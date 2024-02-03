@@ -4,7 +4,7 @@ import ErrorHandler from "../utils/ErrorHandler";
 import { IOrder } from "../models/order";
 import userModel from "../models/user";
 import courseModel from "../models/course";
-import { newOrder } from "../services/order.service";
+import { getAllOrdersService, newOrder } from "../services/order";
 import path from "path";
 import ejs from "ejs"
 import sendMail from "../utils/sendMail";
@@ -64,6 +64,14 @@ export const createOrder = CatchAsyncError(async (req: Request, res: Response, n
             success: true,
             order
         })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 404))
+    }
+})
+
+export const getAllOrders = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        getAllOrdersService(res);
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 404))
     }
