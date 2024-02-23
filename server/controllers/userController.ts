@@ -11,6 +11,8 @@ import bcrypt from "bcryptjs"
 import { redis } from "../utils/redis";
 import { getAllUsersService, getUserById } from "../services/user";
 import cloudinary from "cloudinary";
+import enqueueEmailJob from "../utils/sendMail";
+import { emailQueue } from "../app";
 require("dotenv").config()
 interface IRegistrationBody {
     name: string;
@@ -40,7 +42,7 @@ export const registerUser = CatchAsyncError(async (req: Request, res: Response, 
         }
         const html = await ejs.renderFile(path.join(__dirname, "../mailTemplates/activationTemplate.ejs"), data);
         try {
-            await sendMail({
+            await emailQueue.add(`${Date.now()}`, {
                 email: user.email,
                 subject: 'Activate Your Account',
                 template: 'activationTemplate.ejs',
@@ -182,6 +184,7 @@ export const updateAccessToken = CatchAsyncError(async (req: Request, res: Respo
         }
         req.user = user
         res.cookie("access_token", access_token, accessTokenOptions);
+        await redis.set(user._id, JSON.stringify(user), "EX", 7 * 24 * 3600)
         res.status(201).json({
             success: true,
             access_token

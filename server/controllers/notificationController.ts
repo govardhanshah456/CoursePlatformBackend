@@ -33,12 +33,13 @@ export const notificationStatus = CatchAsyncError(async (req: Request, res: Resp
     }
 })
 
-cron.schedule("Delete 30 days Notifications", async () => {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-    await notificationModel.deleteMany({
-        status: statusVals.READ,
-        createdAt: {
-            $lt: thirtyDaysAgo
-        }
-    })
-})
+// cron.schedule("Delete 30 days Notifications", async () => {
+//     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+//     console.log(thirtyDaysAgo)
+//     await notificationModel.deleteMany({
+//         status: statusVals?.READ,
+//         createdAt: {
+//             $lt: thirtyDaysAgo
+//         }
+//     })
+// })

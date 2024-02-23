@@ -9,6 +9,8 @@ import path from "path";
 import ejs from "ejs"
 import sendMail from "../utils/sendMail";
 import notificationModel from "../models/notification";
+import enqueueEmailJob from "../utils/sendMail";
+import { emailQueue } from "../app";
 // import { newOrder } from "../services/order.service";
 
 export const createOrder = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +42,7 @@ export const createOrder = CatchAsyncError(async (req: Request, res: Response, n
         const html = await ejs.renderFile(path.join(__dirname, '../mailTemplates/orderConfirmationTemplate'), { order: mailData, name: mailData.name })
         try {
             if (user) {
-                await sendMail({
+                await emailQueue.add(`${Date.now()}`, {
                     email: user.email,
                     subject: "Order Confirmation",
                     template: "orderConfirmation.ejs",

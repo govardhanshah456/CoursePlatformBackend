@@ -1,0 +1,1 @@
+const emailWorker = require("./consumer")
