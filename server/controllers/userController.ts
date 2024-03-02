@@ -361,3 +361,24 @@ export const deleteUser = CatchAsyncError(async (req: Request, res: Response, ne
         return next(new ErrorHandler(error.message, 401))
     }
 })
+
+interface IUpdateUserSubscriptionDate {
+    id: string,
+    endDate: Date
+}
+export const updateUserSubscription = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, endDate } = req.body as IUpdateUserSubscriptionDate
+        const user = await userModel.findById(id)
+        if (!user)
+            return next(new ErrorHandler("No such user exists.", 401))
+        user.subscriptionEndDate = endDate
+        await user?.save();
+        res.status(201).json({
+            success: true,
+            user
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
+    }
+})

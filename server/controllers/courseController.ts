@@ -85,7 +85,7 @@ export const getCourseByUser = CatchAsyncError(async (req: Request, res: Respons
         const userCourses = req.user?.courses;
         const courseId = req.params.id;
         const courseExist = userCourses?.find((course: any) => course._id.toString() === courseId)
-        if (!courseExist)
+        if (!courseExist && req.user?.subscriptionEndDate < new Date())
             return next(new ErrorHandler("You SHould Buy this course to access it fully.", 500));
         const course = await courseModel.findById(courseId);
         const content = course?.courseData

@@ -18,6 +18,7 @@ export interface IUser extends Document {
     comparePassword: (password: string) => Promise<boolean>;
     signAccessToken: () => string;
     signRefreshToken: () => string;
+    subscriptionEndDate: Date;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema({
@@ -57,7 +58,11 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
         {
             courseId: String
         }
-    ]
+    ],
+    subscriptionEndDate: {
+        type: Date,
+        default: null
+    }
 }, { timestamps: true })
 
 userSchema.pre<IUser>('save', async function (next) {
