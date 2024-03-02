@@ -18,7 +18,7 @@ const Login: React.FC<Props> = ({ setRoute }) => {
         initialValues: { email: "", password: "" },
         validationSchema: schema,
         onSubmit: async ({ email, password }) => {
-            console.log(email, password)
+            setRoute("verification")
         }
     })
     const { errors, touched, values, handleChange, handleSubmit } = formik
