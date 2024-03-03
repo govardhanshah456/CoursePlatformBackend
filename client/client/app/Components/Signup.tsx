@@ -1,10 +1,12 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from 'react-icons/fc';
 import { styles } from '../Styles/styles';
+import { useActivationMutation, useRegisterMutation } from '@/redux/features/auth/authApi';
+import toast from 'react-hot-toast';
 type Props = {
     setRoute: (route: string) => void;
 }
@@ -13,13 +15,32 @@ const schema = Yup.object().shape({
     email: Yup.string().email("Invalid Email").required("Please Enter Your Email."),
     password: Yup.string().required("Please Enter Your password").min(6)
 })
-const Login: React.FC<Props> = ({ setRoute }) => {
+const Signup: React.FC<Props> = ({ setRoute }) => {
     const [show, setShow] = useState(false)
+    const [register, { isError, data, error, isSuccess }] = useRegisterMutation()
+
+    useEffect(() => {
+        if (isSuccess) {
+            const message = data?.message || "Registration Successful."
+            toast.success(message)
+            setRoute("verification")
+        }
+        if (isError) {
+            const message = (error as any)?.data?.message || "unknown error occured";
+            toast.error(message)
+        }
+    }, [error, isSuccess])
+
     const formik = useFormik({
         initialValues: { name: "", email: "", password: "" },
         validationSchema: schema,
-        onSubmit: async ({ email, password }) => {
-            console.log(email, password)
+        onSubmit: async ({ name, email, password }) => {
+            const data = {
+                email,
+                password,
+                name
+            }
+            await register(data)
         }
     })
     const { errors, touched, values, handleChange, handleSubmit } = formik
@@ -34,7 +55,7 @@ const Login: React.FC<Props> = ({ setRoute }) => {
                     <label className={`${styles.label}`} htmlFor='email'>
                         Enter your Name
                     </label>
-                    <input type="name" name="name" value={values.name} onChange={handleChange} id="name" placeholder='login@name.com' className={
+                    <input type="name" name="name" value={values.name} onChange={handleChange} id="name" placeholder='Signup@name.com' className={
                         `${errors.name && touched.name && "border-red-500"} ${styles.input}`
                     }
                     />
@@ -48,7 +69,7 @@ const Login: React.FC<Props> = ({ setRoute }) => {
                     <label className={`${styles.label}`} htmlFor='email'>
                         Enter your Email
                     </label>
-                    <input type="email" name="email" value={values.email} onChange={handleChange} id="email" placeholder='login@email.com' className={
+                    <input type="email" name="email" value={values.email} onChange={handleChange} id="email" placeholder='Signup@email.com' className={
                         `${errors.email && touched.email && "border-red-500"} ${styles.input}`
                     }
                     />
@@ -94,4 +115,4 @@ const Login: React.FC<Props> = ({ setRoute }) => {
     )
 }
 
-export default Login
+export default Signup
