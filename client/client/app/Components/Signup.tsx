@@ -2,20 +2,21 @@
 import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from 'react-icons/fc';
 import { styles } from '../Styles/styles';
 import { useActivationMutation, useRegisterMutation } from '@/redux/features/auth/authApi';
 import toast from 'react-hot-toast';
 type Props = {
     setRoute: (route: string) => void;
+    setOpen: (open: boolean) => void;
 }
 const schema = Yup.object().shape({
     name: Yup.string().required("Please Enter Your name."),
     email: Yup.string().email("Invalid Email").required("Please Enter Your Email."),
     password: Yup.string().required("Please Enter Your password").min(6)
 })
-const Signup: React.FC<Props> = ({ setRoute }) => {
+const Signup: React.FC<Props> = ({ setRoute, setOpen }) => {
     const [show, setShow] = useState(false)
     const [register, { isError, data, error, isSuccess }] = useRegisterMutation()
 
@@ -29,7 +30,7 @@ const Signup: React.FC<Props> = ({ setRoute }) => {
             const message = (error as any)?.data?.message || "unknown error occured";
             toast.error(message)
         }
-    }, [error, isSuccess])
+    }, [data?.message, error, isError, isSuccess, setRoute])
 
     const formik = useFormik({
         initialValues: { name: "", email: "", password: "" },
@@ -47,6 +48,9 @@ const Signup: React.FC<Props> = ({ setRoute }) => {
 
     return (
         <div className='w-full'>
+            <button className='dark:text-white text-black flex justify-end absolute top-0 right-0 m-4' onClick={() => setOpen(false)}>
+                <AiOutlineClose size={20} />
+            </button>
             <h1 className={`${styles.title}`}>
                 Join LearnEasy
             </h1>
@@ -104,7 +108,7 @@ const Signup: React.FC<Props> = ({ setRoute }) => {
                 <div className='flex items-center justify-center my-3'>
                     <FcGoogle size={30} className='cursor-pointer ml-2' />
                 </div>
-                <h5 className='text-center pt-4 font-Poppins text-[14px]'>
+                <h5 className='text-center pt-4 font-Poppins text-[14px] dark:text-white text-black'>
                     Already have an account?{" "}
                     <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setRoute("Login")}>
                         Sign in

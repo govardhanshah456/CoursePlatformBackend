@@ -11,7 +11,7 @@ const Page = () => {
   return (
     <div>
       <Heading title='LearnEasy' description='Upgrade your skills with Learn easy' keywords='Programming,MERN,ML,Redux' />
-      <Header route={route} setRoute={setRoute} open={true} setOpen={setOpen} activeItem={activeItem} />
+      <Header route={route} setRoute={setRoute} open={open} setOpen={setOpen} activeItem={activeItem} />
     </div>
   )
 }

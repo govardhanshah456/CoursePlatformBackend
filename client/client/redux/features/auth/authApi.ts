@@ -38,8 +38,33 @@ export const authApi = apiSlice.injectEndpoints({
                     activationCode
                 },
             })
+        }),
+        login: builder.mutation({
+            query: ({ email, password }) => ({
+                url: "login",
+                method: "POST",
+                body: {
+                    email,
+                    password
+                },
+                credentials: "include" as const
+            }),
+            async onQueryStarted(data, { queryFulfilled, dispatch }) {
+                try {
+                    const result = await queryFulfilled
+                    dispatch(
+                        userRegistration({
+                            token: result.data.activationToken,
+                            user: result.data.user
+                        })
+                    )
+                } catch (error) {
+                    console.log(error)
+                }
+            }
         })
     }),
 })
 
-export const { useActivationMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation
+    , useActivationMutation, useRegisterMutation } = authApi;
