@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OTP Email</title>
+  <title>Welcome to Our Site</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -63,16 +63,22 @@
 <body>
   <div class="container">
     <div class="header">
-      <h2>Your OTP Code</h2>
+      <h2>Welcome to Our Site</h2>
     </div>
     <div class="content">
-      <p>Dear <strong><%= name %>, Welcome to Coursezilla</strong>,</p>
-      <p>Your One-Time Password (OTP) is: <strong><%= otp %></strong></p>
-      <p>Please use this code to complete your authentication process. This OTP is valid for a limited time.</p>
-      <p>Thank you for using our service!</p>
+      <p>Dear <strong><%= name %>,</strong></p>
+      <p>Welcome to Our Site! We're excited to have you join our community.</p>
+      <p>By registering with us, you'll gain access to a wide range of features and benefits, including:</p>
+      <ul style="text-align: left;">
+        <li>Exclusive content</li>
+        <li>Personalized recommendations</li>
+        <li>Community forums</li>
+        <li>And much more!</li>
+      </ul>
+      <p>Get started now and begin exploring all that our site has to offer!</p>
     </div>
     <div class="footer">
-      <p>&copy; LearnZilla</p>
+      <p>&copy; <%= dateToday %> LearnZilla</p>
     </div>
   </div>
 </body>

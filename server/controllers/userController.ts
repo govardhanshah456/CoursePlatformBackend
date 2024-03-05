@@ -54,7 +54,7 @@ export const registerUser = CatchAsyncError(async (req: Request, res: Response, 
                 activationToken: token
             })
         } catch (error) {
-
+            console.log(error)
         }
     } catch (err: any) {
         console.log(err)
@@ -107,6 +107,27 @@ export const activateUser = CatchAsyncError(async (req: Request, res: Response, 
             email: newUser.user.email,
             password: newUser.user.password
         })
+        const data = {
+            name: user.name,
+            dateToday: new Date().toLocaleDateString()
+        }
+        const html = await ejs.renderFile(path.join(__dirname, "../mailTemplates/welcomeUserTemplate.ejs"), data);
+        try {
+            await emailQueue.add(`${Date.now()}`, {
+                email: user.email,
+                subject: 'Welcome to learnzilla',
+                template: 'welcomeUserTemplate.ejs',
+                data
+            })
+            await emailQueue.add(`${Date.now()}`, {
+                name: user.name,
+                dateToday: new Date().toLocaleDateString(),
+                subject: "Welcome to LearnZilla.",
+                template: ''
+            })
+        } catch (error) {
+
+        }
         res.status(201).json({
             success: true,
             message: 'User registered Successfully.',
@@ -238,14 +259,14 @@ export const updateUserInfo = CatchAsyncError(async (req: Request, res: Response
             return next(new ErrorHandler('You should fill at least one field to update it.', 401))
         const id = req.user?._id;
         const user = await userModel.findById(id);
-        if (user && email) {
-            const exist = await userModel.findOne({
-                email
-            })
-            if (exist)
-                return next(new ErrorHandler('Email Already Exists.', 401))
-            user.email = email;
-        }
+        // if (user && email) {
+        //     const exist = await userModel.findOne({
+        //         email
+        //     })
+        //     if (exist)
+        //         return next(new ErrorHandler('Email Already Exists.', 401))
+        //     user.email = email;
+        // }
         if (name && user)
             user.name = name;
         await user?.save();
@@ -292,13 +313,15 @@ export const updateAvatar = CatchAsyncError(async (req: Request, res: Response, 
     try {
         const { avatar } = req.body as IUpdateAvatar
         const user = await userModel.findById(req.user?._id);
-        if (user && avatar) {
+        console.log(user)
+        if (user) {
             if (user?.avatar?.public_id) {
                 await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
             }
             const myCloud = await cloudinary.v2.uploader.upload(avatar, {
                 folder: "avatars",
-                width: 150
+                width: 150,
+
             })
             user.avatar = {
                 public_id: myCloud.public_id,
@@ -313,6 +336,7 @@ export const updateAvatar = CatchAsyncError(async (req: Request, res: Response, 
             user
         })
     } catch (error: any) {
+        console.log(error)
         return next(new ErrorHandler(error.message, 401))
     }
 })

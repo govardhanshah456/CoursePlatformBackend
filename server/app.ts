@@ -19,8 +19,9 @@ export const emailQueue = new Queue("email-queue", {
 require('dotenv').config()
 app.use(express.json({ limit: '50mb' }))
 app.use(cookiepParser());
-app.use('/api/v1', userRouter, courseRouter, notificationRouter, orderRouter, analyticsRouter, layoutRouter)
 app.use(cors({
-    origin: process.env.ORIGIN
+    origin: ["http://localhost:3000"],
+    credentials: true
 }))
+app.use('/api/v1', userRouter, courseRouter, notificationRouter, orderRouter, analyticsRouter, layoutRouter)
 app.use(ErrorHandlerMiddleware)

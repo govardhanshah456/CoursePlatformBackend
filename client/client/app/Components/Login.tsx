@@ -7,6 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { styles } from '../Styles/styles';
 import { useLoginMutation } from '@/redux/features/auth/authApi';
 import toast from 'react-hot-toast';
+import { signIn } from 'next-auth/react';
 type Props = {
     setRoute: (route: string) => void;
     setOpen: (open: boolean) => void;

@@ -8,7 +8,9 @@ import Link from 'next/link';
 import Navitems from './Navitems';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { HiOutlineUserCircle } from 'react-icons/hi';
-
+import { useSelector } from 'react-redux';
+import Image from 'next/image';
+import lena512color from "../../public/lena512color.jpg"
 type Props = {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -20,7 +22,7 @@ const Header: React.FC<Props> = ({ open, setOpen, route, setRoute, activeItem })
     const [active, setActive] = useState(false)
     const [openSiebar, setOpenSidebar] = useState(false)
     const [isMobile, setIsMobile] = React.useState(false);
-
+    const { user } = useSelector((state: any) => state.auth)
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
@@ -46,7 +48,9 @@ const Header: React.FC<Props> = ({ open, setOpen, route, setRoute, activeItem })
                         <div className='flex items-center'>
                             <Navitems activeItem={activeItem} isMobile={isMobile} />
                             <ThemeSwitcher />
-                            <HiOutlineUserCircle size={25} className='cursor-pointer dark:text-white text-black' onClick={() => setOpen(true)} />
+                            {!user ? <HiOutlineUserCircle size={25} className='cursor-pointer dark:text-white text-black' onClick={() => setOpen(true)} /> : (
+                                <><Link href={'/profile'}><Image src={user?.avatar?.url || lena512color} alt="" height={'40'} width={'40'} /></Link></>
+                            )}
                         </div>
                     </div>
                 </div>

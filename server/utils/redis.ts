@@ -11,5 +11,6 @@ require('dotenv').config();
 
 export const redis = new Redis({
     port: 6379,
-    host: 'host.docker.internal'
+    host: 'host.docker.internal',
+    connectTimeout: 10000
 });

@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 require("dotenv").config()
 const emailWorker = new Worker('email-queue', async (job) => {
     const emailData = job.data;
+    console.log(emailData)
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587'),
@@ -16,9 +17,8 @@ const emailWorker = new Worker('email-queue', async (job) => {
         }
 
     })
-    console.log('hello')
     const { email, subject, template, data } = emailData;
-    const templatePath = path.join(__dirname, "../mailTemplates", template);
+    const templatePath = path.join(__dirname, "./mailTemplates", template);
     const html = await ejs.renderFile(templatePath, data);
     const mailOptions = {
         from: process.env.SMTP_HOST,
@@ -28,6 +28,7 @@ const emailWorker = new Worker('email-queue', async (job) => {
     }
     try {
         await transporter.sendMail(mailOptions)
+        console.log("checking")
     } catch (error) {
         console.log(error)
     }
