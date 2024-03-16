@@ -4,6 +4,9 @@ import lena512jpg from "../../public/lena512color.jpg"
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { SiCoursera } from 'react-icons/si';
 import { BiLogOutCircle } from 'react-icons/bi';
+import AdminProtected from '../hooks/adminProtected';
+import { MdOutlineAdminPanelSettings } from 'react-icons/md';
+import Link from 'next/link';
 type Props = {
     user: any;
     active: number;
@@ -29,6 +32,11 @@ const SidebarProfile: React.FC<Props> = ({ user, active, avatar, setActive, logo
                 <SiCoursera size={20} className='dark:text-white text-black' />
                 <h5 className='pl-2 800px:block hidden font-Poppins dark:text-white text-black'>Enrolled Courses</h5>
             </div>
+            <Link href={'/admin'} className={`w-full flex items-center px-3 py-4 cursor-pointer ${active === 6 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
+                }`} onClick={() => setActive(6)}>
+                <MdOutlineAdminPanelSettings size={20} className='dark:text-white text-black' />
+                <h5 className='pl-2 800px:block hidden font-Poppins dark:text-white text-black'>Admin Dashboard</h5>
+            </Link>
             <div className={`w-full flex items-center px-3 py-4 cursor-pointer ${active === 4 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
                 }`} onClick={() => logoutHandler()}>
                 <BiLogOutCircle size={20} className='dark:text-white text-black' />
