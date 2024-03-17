@@ -3,6 +3,7 @@ import React from 'react'
 import Heading from '../Components/Heading'
 import AdminSidebar from '../Components/AdminSidebar'
 import AdminProtected from '../hooks/adminProtected'
+import DashboardHero from '../Components/DashboardHero'
 
 const page = () => {
     return (
@@ -14,7 +15,7 @@ const page = () => {
                     <AdminSidebar />
                 </div>
                 <div className='w-[65%]'>
-
+                    <DashboardHero />
                 </div>
             </div>
             {/* </AdminProtected> */}
