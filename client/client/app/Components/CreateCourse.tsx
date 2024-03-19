@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import CourseInfo from './CourseInfo'
 import CourseOptions from './CourseOptions'
+import CourseData from './CourseData'
 
 const CreateCourse = () => {
     const [active, setActive] = useState(0)
@@ -15,8 +16,8 @@ const CreateCourse = () => {
         demoUrl: "",
         thumbnail: ""
     })
-    const [benefits, setBenefits] = useState({ title: "" })
-    const [prerequisites, setPrerequisites] = useState({ title: "" })
+    const [benefits, setBenefits] = useState([{ title: "" }])
+    const [prerequisites, setPrerequisites] = useState([{ title: "" }])
     const [courseContentData, setCourseContentData] = useState([
         {
             videoUrl: "",
@@ -39,6 +40,11 @@ const CreateCourse = () => {
                 {
                     active === 0 && (
                         <CourseInfo courseInfo={courseInfo} setCourseInfo={setCourseInfp} active={active} setActive={setActive} />
+                    )
+                }
+                {
+                    active === 1 && (
+                        <CourseData active={active} setActive={setActive} benefits={benefits} setBenefits={setBenefits} prerequisites={prerequisites} setPrerequisites={setPrerequisites} />
                     )
                 }
             </div>
