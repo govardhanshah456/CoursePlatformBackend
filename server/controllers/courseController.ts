@@ -6,7 +6,7 @@ import { createCourseService, getAllCoursesService, getAllCoursesServiceFull, ge
 import { redis } from "../utils/redis";
 import courseModel from "../models/course";
 import notificationModel from "../models/notification";
-
+import multer from "multer";
 export const createCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = req.body;
@@ -259,12 +259,14 @@ export const deleteCourse = CatchAsyncError(async (req: Request, res: Response, 
 
 export const videoUpload = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const file = req.body.files
-        const result = await cloudinary.v2.uploader.upload(file, {
-            folder: 'course videos'
-        })
+        const file: any = req.file?.path
+        let result: any = null;
+        cloudinary.v2.uploader.upload_large(file, {
+            folder: 'course videos',
+            resource_type: 'video'
+        }, function (err, ress) { })
         res.status(200).json({
-            url: result.secure_url
+            result
         })
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 401))

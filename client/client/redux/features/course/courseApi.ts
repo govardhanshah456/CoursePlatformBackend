@@ -3,13 +3,12 @@ import { apiSlice } from "../api/apiSlice";
 export const courseApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         uploadVideo: builder.mutation({
-            query: (files) => ({
+            query: (file) => ({
                 url: "upload-video",
                 method: "POST",
-                body: { files },
-                credentials: "include" as const,
+                body: file,
                 headers: {
-                    'Content-type': "multipart/form-data"
+                    'Content-Type': `multipart/form-data; boundary=${file._boundary}`,
                 },
             }),
             async onQueryStarted(data, { queryFulfilled, dispatch }) {

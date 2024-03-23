@@ -1,9 +1,11 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { AiOutlineDelete } from 'react-icons/ai';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { styles } from '../Styles/styles';
 import axios from "axios"
 import { useUploadVideoMutation } from '@/redux/features/course/courseApi';
+import toast from 'react-hot-toast';
+import Loader from './Loader';
 type Props = {
     active: number;
     setActive: (active: number) => void;
@@ -27,49 +29,35 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
     const [file, setFile] = useState<File | any>(null)
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadVideo, { isSuccess, error }] = useUploadVideoMutation()
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Uploading Completed Successfully")
+        }
+        if (error) {
+            toast.error("error Occured")
+        }
+    })
     const handleFileChange = async (e: any, index: number) => {
-        const videoFile = e.target.files[0]
-        const formData = new FormData()
-        formData.append('file', videoFile)
-        // const fileReader = new FileReader()
-        // fileReader.onload = () => {
-        //     if (fileReader.readyState === 2) {
-        //         const video = fileReader.result
-        //         const res = uploadVideo(video)
-        //         const updatedData = [...courseContentData]
-        //         updatedData[index].videoUrl = res
-        //         setCourseContentData(updatedData)
-        //     }
-        // }
-        // fileReader.readAsDataURL(videoFile)
-        const res = await axios.post('http://localhost:8000/api/v1/upload-video', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-        // try {
-        //     setUploading(true);
-        //     const formData = new FormData();
-        //     formData.append('file', videoFile)
-        //     console.log(formData.get('file'))
-        //     const config = {
-        //         headers: {
-        //             'Content-Type': 'multipart/form-data'
-        //         },
-        //         onUploadProgress: (progressEvent: any) => {
-        //             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        //             setUploadProgress(percentCompleted);
-        //         }
-        //     };
-
-        //     const response = await uploadVideo({ videoFile, config })
-        //     const updatedData = [...courseContentData]
-        //     updatedData[index].videoUrl = response
-        //     setCourseContentData(updatedData);
-        //     setUploading(false);
-        // } catch (error) {
-        //     console.log(error)
-        // }
+        try {
+            setUploading(true);
+            const formData = new FormData();
+            const videoFile = e.target.files[0]
+            formData.append('file', videoFile)
+            console.log(formData.get('file'))
+            const config = {
+            };
+            const response = await axios.post('http://localhost:8000/api/v1/upload-video', formData)
+            const updatedData = [...courseContentData]
+            updatedData[index].videoUrl = response
+            setCourseContentData(updatedData);
+            setUploading(false);
+        } catch (error) {
+            console.log(error)
+            setUploading(false);
+            const updatedData = [...courseContentData]
+            updatedData[index].videoUrl = ''
+            setCourseContentData(updatedData);
+        }
     };
     return (
         <div className='w-[80%] m-auto mt-24 p-3'>
@@ -141,7 +129,7 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                     <label className={styles.label}>Upload Video</label>
                                                     <input type='file' onChange={(e) => handleFileChange(e, index)} />
                                                     {uploading && (
-                                                        <progress value={uploadProgress} max="100">{uploadProgress}%</progress>
+                                                        <Loader />
                                                     )}
                                                     {item.videoUrl != "" && (
                                                         <div>
