@@ -64,13 +64,13 @@ const CourseInfo: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setAct
                 </div>
                 <br />
                 <div className='w-full flex justify-between'>
-                    <div className='w-[50%]'>
+                    <div>
                         <label className={`w-[45%] ${styles.label}`}>
                             Course Price
                         </label>
                         <input type='number' name='' required value={courseInfo.price} onChange={(e) => setCourseInfo({ ...courseInfo, price: e.target.value })} id='price' placeholder='29' className={`${styles.input}`} />
                     </div>
-                    <div className='w-[50%]'>
+                    <div>
                         <label className={`w-[45%] ${styles.label}`}>
                             Estimated Course Price
                         </label>
@@ -101,19 +101,21 @@ const CourseInfo: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setAct
                 </div>
                 <br />
                 <div className='w-full'>
-                    <input type='file' accept='image/a' id='file' className='hidden' onChange={handleFileChange} />
+
                     <label className={`${styles.label} w-full min-h-[10vh] dark:border-white border-black p-3 border flex items-center justify-center ${dragging ? "bg-blue-500" : "bg-transparent"
                         }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
                         {
                             courseInfo.thumbnail ? (
-                                <Image src={courseInfo.thumbnail} alt="" className='max-h-full w-full object-cover' />
+                                <img src={courseInfo.thumbnail} alt="" className='max-h-full w-full object-cover' />
                             ) : (
                                 <span className='text-black dark:text-white'>
                                     Drag and Drop thumbnail here or click to browse
+                                    <input type='file' accept='image/a' id='file' className='hidden' onChange={handleFileChange} title='file' placeholder='file' />
                                 </span>
                             )
                         }
                     </label>
+
                 </div>
                 <br />
                 <br />

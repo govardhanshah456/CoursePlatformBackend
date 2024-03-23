@@ -1,6 +1,7 @@
 import React from 'react'
 import { styles } from '../Styles/styles';
 import { AddCircleOutline } from '@mui/icons-material';
+import toast from 'react-hot-toast';
 
 type Props = {
     benefits: { title: string }[];
@@ -33,6 +34,27 @@ const CourseData: React.FC<Props> = ({ benefits, setBenefits, prerequisites, set
             setPrerequisites([...prerequisites, { title: "" }])
     }
 
+    const handleNext = () => {
+        const util = () => {
+            let output = true
+            benefits.forEach((benefit) => {
+                console.log(benefit)
+                if (benefit.title == "")
+                    output = false
+            })
+            let output1 = true
+            prerequisites.forEach((prerequisite) => {
+                console.log(prerequisite)
+                if (prerequisite.title == "")
+                    output1 = false;
+            })
+            return output && output1;
+        }
+        if (util())
+            setActive(active + 1);
+        else
+            toast.error('Please Fill All The Fields')
+    }
     return (
         <div className='w-[80%] m-auto mt-24 block'>
             <div>
@@ -47,7 +69,7 @@ const CourseData: React.FC<Props> = ({ benefits, setBenefits, prerequisites, set
                     ))
 
                 }
-                <AddCircleOutline style={{ margin: "10px 0px", cursor: "pointer", width: "30px" }} onClick={handleAddBenefits} />
+                <AddCircleOutline className='dark:text-white text-black' style={{ margin: "10px 0px", cursor: "pointer", width: "30px" }} onClick={handleAddBenefits} />
             </div>
             <div>
                 <label className={`${styles.label} text-[20px]`} htmlFor='email'>
@@ -61,9 +83,12 @@ const CourseData: React.FC<Props> = ({ benefits, setBenefits, prerequisites, set
                     ))
 
                 }
-                <AddCircleOutline style={{ margin: "10px 0px", cursor: "pointer", width: "30px" }} onClick={(e) => handleAddBenefits(e, false)} />
+                <AddCircleOutline className='dark:text-white text-black' style={{ margin: "10px 0px", cursor: "pointer", width: "30px" }} onClick={(e) => handleAddBenefits(e, false)} />
             </div>
-        </div>
+            <div className='w-full flex items-center justify-end' onClick={handleNext}>
+                <input type='submit' value={"next"} className='w-full 800px:w-[100px] h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer' />
+            </div>
+        </div >
     )
 }
 

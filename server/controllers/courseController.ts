@@ -256,3 +256,17 @@ export const deleteCourse = CatchAsyncError(async (req: Request, res: Response, 
         return next(new ErrorHandler(error.message, 401))
     }
 })
+
+export const videoUpload = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const file = req.body.files
+        const result = await cloudinary.v2.uploader.upload(file, {
+            folder: 'course videos'
+        })
+        res.status(200).json({
+            url: result.secure_url
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
+    }
+})
