@@ -6,7 +6,7 @@ import { createCourseService, getAllCoursesService, getAllCoursesServiceFull, ge
 import { redis } from "../utils/redis";
 import courseModel from "../models/course";
 import notificationModel from "../models/notification";
-import multer from "multer";
+import fs from "fs"
 export const createCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = req.body;
@@ -261,10 +261,26 @@ export const videoUpload = CatchAsyncError(async (req: Request, res: Response, n
     try {
         const file: any = req.file?.path
         let result: any = null;
-        cloudinary.v2.uploader.upload_large(file, {
-            folder: 'course videos',
-            resource_type: 'video'
-        }, function (err, ress) { })
+        new Promise((res, rej) => {
+            cloudinary.v2.uploader.upload_large(file, {
+                folder: 'course videos',
+                resource_type: 'video'
+            }, function (err, ress) {
+                if (err)
+                    rej(err)
+                else
+                    res(ress)
+            })
+        }).then(
+            (res) => { console.log(res); result = res; }
+        )
+        fs.unlink(file, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+                return;
+            }
+            console.log('File deleted successfully');
+        });
         res.status(200).json({
             result
         })
