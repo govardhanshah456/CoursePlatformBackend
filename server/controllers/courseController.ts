@@ -272,18 +272,22 @@ export const videoUpload = CatchAsyncError(async (req: Request, res: Response, n
                     res(ress)
             })
         }).then(
-            (res) => { console.log(res); result = res; }
-        )
-        fs.unlink(file, (err) => {
-            if (err) {
-                console.error('Error deleting file:', err);
-                return;
+            (ress) => {
+                console.log(ress); result = ress;
+
+                fs.unlink(file, (err) => {
+                    if (err) {
+                        console.error('Error deleting file:', err);
+                        return;
+                    }
+                    console.log('File deleted successfully');
+                });
+
+                res.status(200).json({
+                    result
+                })
             }
-            console.log('File deleted successfully');
-        });
-        res.status(200).json({
-            result
-        })
+        ).catch((err) => { console.log(err); throw new Error("File Size Too Large!") })
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 401))
     }

@@ -6,6 +6,7 @@ import axios from "axios"
 import { useUploadVideoMutation } from '@/redux/features/course/courseApi';
 import toast from 'react-hot-toast';
 import Loader from './Loader';
+import UploadPercent from './UploadPercent';
 type Props = {
     active: number;
     setActive: (active: number) => void;
@@ -46,11 +47,43 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
             console.log(formData.get('file'))
             const config = {
             };
-            const response = await axios.post('http://localhost:8000/api/v1/upload-video', formData)
-            const updatedData = [...courseContentData]
-            updatedData[index].videoUrl = response
-            setCourseContentData(updatedData);
-            setUploading(false);
+            // const response = await axios.post('http://localhost:8000/api/v1/upload-video', formData)
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('POST', 'http://localhost:8000/api/v1/upload-video', true);
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    console.log(percentComplete)
+                    setUploadProgress(percentComplete);
+                }
+            };
+            let response: any = null;
+            xhr.onload = () => {
+                // Upload complete
+                if (xhr.status === 200) {
+                    console.log('Upload complete');
+                    setUploadProgress(100);
+                    response = JSON.parse(xhr.responseText)
+                    const updatedData = [...courseContentData]
+                    console.log(response)
+                    updatedData[index].videoUrl = response?.result?.secure_url
+                    console.log(updatedData[index])
+                    setCourseContentData(updatedData);
+                    setUploading(false);
+                } else {
+                    console.error('Upload failed');
+                }
+            };
+
+            xhr.onerror = () => {
+                console.error('Upload error');
+            };
+
+            xhr.send(formData);
+
+
         } catch (error) {
             console.log(error)
             setUploading(false);
@@ -126,14 +159,20 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                     }} />
                                                 </div>
                                                 <div className='mb-3'>
-                                                    <label className={styles.label}>Upload Video</label>
-                                                    <input type='file' onChange={(e) => handleFileChange(e, index)} />
-                                                    {uploading && (
-                                                        <Loader />
+                                                    <label className={`${styles.label} dark:text-white text-black`}>Upload Video<br /></label>
+                                                    <input type='file' onChange={(e) => handleFileChange(e, index)} className='dark:text-white text-black' />
+                                                    <br />
+                                                    {uploading && uploadProgress != 100 && (
+                                                        <UploadPercent percentage={uploadProgress} />
                                                     )}
-                                                    {item.videoUrl != "" && (
+                                                    {
+                                                        uploadProgress === 100 && item.videoUrl === "" && (
+                                                            <p className='dark:text-white text-black'>Please wait while video is processing...</p>
+                                                        )
+                                                    }
+                                                    {!uploading && item.videoUrl != "" && (
                                                         <div>
-                                                            <p>Video uploaded successfully!</p>
+                                                            <p className='dark:text-white text-black'>Video uploaded successfully!</p>
                                                             <video src={item.videoUrl} controls />
                                                         </div>
                                                     )}
