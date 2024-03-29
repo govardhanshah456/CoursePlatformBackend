@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { AiOutlineDelete } from 'react-icons/ai';
+import { AiFillPlusCircle, AiOutlineDelete, AiOutlinePlusCircle } from 'react-icons/ai';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { styles } from '../Styles/styles';
 import axios from "axios"
@@ -92,6 +92,49 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
             setCourseContentData(updatedData);
         }
     };
+    const newContentHandler = (item: any) => {
+        const newContent = {
+            videoUrl: "",
+            title: '',
+            description: "",
+            videoSection: (courseContentData.length && courseContentData[courseContentData.length - 1].videoSection) || "",
+            links: [{ title: "", url: '' }]
+        }
+        setCourseContentData([...courseContentData, newContent])
+    }
+    const addNewSection = () => {
+        setActiveSection(activeSection + 1)
+        const newContent = {
+            videoUrl: '',
+            title: '',
+            descrription: '',
+            videoSection: `Untitled Section ${activeSection}`,
+            links: [{ title: "", url: "" }]
+        }
+        setCourseContentData([...courseContentData, newContent])
+    }
+    const handleOptions = () => {
+        let isValid = [];
+        isValid = courseContentData.map((courseContent: any) => {
+            const linksValid = courseContent.links.map((link: any) => {
+                return link.title != "" && link.url != ""
+            })
+            return courseContent.title != "" && courseContent.description != "" && courseContent.videoUrl != "" && linksValid
+        })
+        let ok = true;
+        isValid.forEach((val: any) => {
+            if (!val)
+                ok = false;
+        })
+        if (ok) {
+            setActive(active + 1)
+            handleCourseSubmit()
+        }
+        else {
+            toast.error("Please Fill All The Fields")
+        }
+    }
+
     return (
         <div className='w-[80%] m-auto mt-24 p-3'>
             <form onSubmit={handleSubmit}>
@@ -167,7 +210,7 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                     )}
                                                     {
                                                         uploadProgress === 100 && item.videoUrl === "" && (
-                                                            <p className='dark:text-white text-black'>Please wait while video is processing...</p>
+                                                            <p className='dark:text-white text-black'>Please wait while video is processing, it can take upto 30 minutes...</p>
                                                         )
                                                     }
                                                     {!uploading && item.videoUrl != "" && (
@@ -177,15 +220,45 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                         </div>
                                                     )}
                                                 </div>
+                                                <div className='mb-3'>
+                                                    <label className={`${styles.label}`}>Video Description</label>
+                                                    <textarea rows={8} cols={30} placeholder='Description' className={`${styles.input} h-min`} value={item.description} onChange={(e) => {
+                                                        const updatedData = [...courseContentData]
+                                                        updatedData[index].description = e.target.value
+                                                        setCourseContentData(updatedData)
+                                                    }} />
+                                                </div>
+                                                <br />
+                                                <br />
+                                                {
+                                                    index === courseContentData.length - 1 && (
+                                                        <div>
+                                                            <p className='flex items-center text-[18px] dark:text-white text-black cursor-pointer'
+                                                                onClick={(e: any) => newContentHandler(item)}>
+                                                                <AiOutlinePlusCircle size={20} className='mr-4'></AiOutlinePlusCircle>Add New Content
+                                                            </p>
+                                                        </div>
+                                                    )
+                                                }
                                             </>
                                         )
                                     }
+
                                 </div>
                             </>
                         )
                     })
 
                 }
+                <br />
+                <div className='flex items-center text-[20px] dark:text-white text-black cursor-pointer' onClick={addNewSection}>
+                    <AiFillPlusCircle size={20} className='mr-4' /> Add New Section
+                </div>
+                <br />
+                <br />
+                <div className='w-full flex items-center justify-end' >
+                    <div className='w-full 800px:w-[100px] h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer' onClick={() => handleOptions()}>Next</div>
+                </div>
             </form>
         </div>
     )
