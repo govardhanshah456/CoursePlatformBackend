@@ -1,7 +1,7 @@
 import express from "express"
 import { activateUser, getUserInfo, loginUser, logoutUser, registerUser, socialAuth, updateAccessToken, updateAvatar, updatePassword, updateUserInfo } from "../controllers/userController"
 import { authorizeRoles, isAuthenticated } from "../middleware/auth"
-import { addQuestion, addReview, addReviewReply, answerQuestion, createCourse, deleteCourse, getAllCourses, getAllCoursesFull, getCourseById, getCourseByUser, updateCourse, videoUpload } from "../controllers/courseController"
+import { addQuestion, addReview, addReviewReply, answerQuestion, createCourse, deleteCourse, fileUpload, getAllCourses, getAllCoursesFull, getCourseById, getCourseByUser, updateCourse, videoUpload } from "../controllers/courseController"
 import multer from "multer"
 import path from "path";
 const storage = multer.diskStorage({
@@ -27,4 +27,5 @@ courseRouter.put('/add-review-reply/:id', isAuthenticated, authorizeRoles('admin
 courseRouter.get('/get-all-courses', isAuthenticated, authorizeRoles('admin'), getAllCoursesFull);
 courseRouter.delete('/delete-course', isAuthenticated, authorizeRoles('admin'), deleteCourse);
 courseRouter.post('/upload-video', upload.single('file'), videoUpload);
+courseRouter.post('/upload-file', upload.single('file'), fileUpload);
 export default courseRouter;

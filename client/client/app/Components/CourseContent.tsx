@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { AiFillPlusCircle, AiOutlineDelete, AiOutlinePlusCircle } from 'react-icons/ai';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { styles } from '../Styles/styles';
@@ -7,6 +7,8 @@ import { useUploadVideoMutation } from '@/redux/features/course/courseApi';
 import toast from 'react-hot-toast';
 import Loader from './Loader';
 import UploadPercent from './UploadPercent';
+import { Button, List, ListItem, ListItemText } from '@mui/material';
+import { LineAxis } from '@mui/icons-material';
 type Props = {
     active: number;
     setActive: (active: number) => void;
@@ -27,8 +29,9 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
         setIsCollapsed(updatedCollapsed)
     }
     const [uploading, setUploading] = useState(false);
-    const [file, setFile] = useState<File | any>(null)
+    const [files, setFiles] = useState<any>([])
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [current, setCurrent] = useState("")
     const [uploadVideo, { isSuccess, error }] = useUploadVideoMutation()
     useEffect(() => {
         if (isSuccess) {
@@ -134,13 +137,48 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
             toast.error("Please Fill All The Fields")
         }
     }
-
+    const handleDownload = (url: any) => {
+        window.open(url, '_blank')
+    }
+    const [isAttahcmentOpen, setIsAttahcmentOpen] = useState(false)
+    const attahcmentHandler = () => {
+        (inputRefnBtn as any).current?.click();
+    }
+    const newAttachmentHandler = async (e: any, index: any) => {
+        const arr: any[] = []
+        setIsAttahcmentOpen(true)
+        console.log(e.target.files?.length)
+        for (let i = 0; i < e.target.files?.length; i++) {
+            const file = e.target.files[i]
+            if (file) {
+                setCurrent(file.name)
+                const formData = new FormData()
+                formData.append('file', file)
+                setCurrent("")
+                const res = await axios.post('http://localhost:8000/api/v1/upload-file', formData)
+                arr.push({ title: file.name, url: res.data.result.secure_url })
+            }
+        }
+        console.log(arr)
+        const updatedData = [...courseContentData]
+        console.log(updatedData[index])
+        updatedData[index].links = updatedData[index].links.concat(arr);
+        setFiles(arr)
+        setCourseContentData(updatedData)
+    }
+    const inputRefnBtn = useRef(null)
+    const handleDelete = (url: any, index: any) => {
+        const updatedData = [...courseContentData]
+        updatedData[index].links = updatedData[index].links.filter((link: any) => link.url != url)
+        setCourseContentData(updatedData)
+    }
     return (
         <div className='w-[80%] m-auto mt-24 p-3'>
             <form onSubmit={handleSubmit}>
                 {
                     courseContentData?.map((item: any, index: number) => {
                         const showSectionInput = (!!!index) || item.videoSection !== courseContentData[index - 1].videoSection;
+
                         return (
                             <>
                                 <div className={`w-full bg-[#cdc8c817] p-4 ${showSectionInput ? "mt-10" : "mb-0"
@@ -240,6 +278,53 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                         </div>
                                                     )
                                                 }
+
+                                                < br />
+                                                {
+                                                    index === courseContentData.length - 1 && (
+                                                        <div>
+                                                            <p className='flex items-center text-[18px] dark:text-white text-black cursor-pointer'
+                                                                onClick={(e: any) => attahcmentHandler()}>
+                                                                <AiOutlinePlusCircle size={20} className='mr-4'></AiOutlinePlusCircle>Add Attachments
+                                                                <input type='file' multiple={true} onChange={(e) => newAttachmentHandler(e, index)} style={{ display: "none" }} ref={inputRefnBtn} />
+                                                                <br />
+                                                            </p>
+                                                            {
+                                                                current != "" && (
+                                                                    <p className='dark:text-white text-black'>Uploading {current} file</p>
+                                                                )
+                                                            }
+                                                            {
+                                                                courseContentData[index].links?.length && (
+                                                                    <List style={{ maxHeight: '180px', overflowY: 'auto' }}>
+                                                                        {courseContentData[index].links?.map((file: any, index: any) => (
+                                                                            <ListItem key={index} >
+                                                                                <ListItemText className='dark:text-white text-black' primary={file.title} />
+                                                                                <Button
+                                                                                    variant="contained"
+                                                                                    color="primary"
+                                                                                    onClick={() => handleDownload(file.url)}
+                                                                                >
+                                                                                    Download
+                                                                                </Button>
+                                                                                <AiOutlineDelete
+                                                                                    size={20}
+                                                                                    style={{ marginLeft: '5px', cursor: 'pointer' }}
+                                                                                    className='dark:text-white text-black'
+                                                                                    onClick={() => handleDelete(file.url, index)}
+                                                                                >
+                                                                                    Delete
+                                                                                </AiOutlineDelete>
+                                                                            </ListItem>
+                                                                        ))}
+                                                                    </List>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    )
+
+                                                }
+
                                             </>
                                         )
                                     }

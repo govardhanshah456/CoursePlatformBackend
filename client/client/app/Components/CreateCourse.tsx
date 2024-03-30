@@ -36,8 +36,33 @@ const CreateCourse = () => {
     ])
     const [courseData, setCourseData] = useState({})
     const handleSubmit = async () => {
-
+        const formattedBenefits = benefits.map((benefit: any) => ({ title: benefit.title }))
+        const formattedPrerequisites = prerequisites.map((benefit: any) => ({ title: benefit.title }))
+        const formattedCourseContentData = courseContentData.map((CourseContent: any) => ({
+            videoUrl: CourseContent.videoUrl,
+            title: CourseContent.title,
+            description: CourseContent.descrition,
+            videoSection: CourseContent.videoSection,
+            links: CourseContent.links,
+            suggestion: CourseContent.suggestion
+        }))
+        const data = {
+            name: courseInfo.name,
+            description: courseInfo.description,
+            price: courseInfo.price,
+            estimatedPrice: courseInfo.estimatedPrice,
+            thumbnail: courseInfo.thumbnail,
+            tags: courseInfo.tags,
+            level: courseInfo.level,
+            demoUrl: courseInfo.demoUrl,
+            totalVideos: courseContentData.length,
+            benefits: formattedBenefits,
+            prerequisites: formattedPrerequisites,
+            CourseContent: formattedCourseContentData
+        }
+        setCourseData(data)
     }
+
     return (
         <div className='w-full flex min-h-screen'>
             <div className='w-[80%]'>
@@ -49,6 +74,11 @@ const CreateCourse = () => {
                 {
                     active === 1 && (
                         <CourseData active={active} setActive={setActive} benefits={benefits} setBenefits={setBenefits} prerequisites={prerequisites} setPrerequisites={setPrerequisites} />
+                    )
+                }
+                {
+                    active === 2 && (
+                        <CourseContent active={active} setActive={setActive} courseContentData={courseContentData} setCourseContentData={setCourseContentData} handleSubmit={handleSubmit} />
                     )
                 }
                 {

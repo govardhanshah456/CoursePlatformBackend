@@ -292,3 +292,18 @@ export const videoUpload = CatchAsyncError(async (req: Request, res: Response, n
         return next(new ErrorHandler(error.message, 401))
     }
 })
+
+export const fileUpload = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const file: any = req.file?.path
+        const result = await cloudinary.v2.uploader.upload(file, {
+            folder: "course attachments"
+        })
+        fs.unlinkSync(file)
+        res.status(201).json({
+            result
+        })
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 401))
+    }
+})
