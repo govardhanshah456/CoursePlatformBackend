@@ -4,6 +4,7 @@ import CourseInfo from './CourseInfo'
 import CourseOptions from './CourseOptions'
 import CourseData from './CourseData'
 import CourseContent from './CourseContent'
+import CoursePreview from './CoursePreview'
 
 const CreateCourse = () => {
     const [active, setActive] = useState(0)
@@ -82,8 +83,8 @@ const CreateCourse = () => {
                     )
                 }
                 {
-                    active === 2 && (
-                        <CourseContent active={active} setActive={setActive} courseContentData={courseContentData} setCourseContentData={setCourseContentData} handleSubmit={handleSubmit} />
+                    active === 3 && (
+                        <CoursePreview active={active} setActive={setActive} courseData={courseData} handleCourseCreate={handleSubmit} />
                     )
                 }
             </div>
