@@ -3,7 +3,7 @@ import { AiFillPlusCircle, AiOutlineDelete, AiOutlinePlusCircle } from 'react-ic
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { styles } from '../Styles/styles';
 import axios from "axios"
-import { useUploadVideoMutation } from '@/redux/features/course/courseApi';
+// import { useUploadVideoMutation } from '@/redux/features/course/courseApi';
 import toast from 'react-hot-toast';
 import Loader from './Loader';
 import UploadPercent from './UploadPercent';
@@ -32,15 +32,15 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
     const [files, setFiles] = useState<any>([])
     const [uploadProgress, setUploadProgress] = useState(0);
     const [current, setCurrent] = useState("")
-    const [uploadVideo, { isSuccess, error }] = useUploadVideoMutation()
-    useEffect(() => {
-        if (isSuccess) {
-            toast.success("Uploading Completed Successfully")
-        }
-        if (error) {
-            toast.error("error Occured")
-        }
-    })
+    // const [uploadVideo, { isSuccess, error }] = useUploadVideoMutation()
+    // useEffect(() => {
+    //     if (isSuccess) {
+    //         toast.success("Uploading Completed Successfully")
+    //     }
+    //     if (error) {
+    //         toast.error("error Occured")
+    //     }
+    // })
     const handleFileChange = async (e: any, index: number) => {
         try {
             setUploading(true);
@@ -298,7 +298,7 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                                 courseContentData[index].links?.length && (
                                                                     <List style={{ maxHeight: '180px', overflowY: 'auto' }}>
                                                                         {courseContentData[index].links?.map((file: any, index: any) => (
-                                                                            <ListItem key={index} >
+                                                                            (file.title != '' && <ListItem key={index} >
                                                                                 <ListItemText className='dark:text-white text-black' primary={file.title} />
                                                                                 <Button
                                                                                     variant="contained"
@@ -316,7 +316,7 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                                                     Delete
                                                                                 </AiOutlineDelete>
                                                                             </ListItem>
-                                                                        ))}
+                                                                            )))}
                                                                     </List>
                                                                 )
                                                             }

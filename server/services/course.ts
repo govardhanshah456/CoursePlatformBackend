@@ -4,11 +4,17 @@ import courseModel from "../models/course";
 import { redis } from "../utils/redis";
 
 export const createCourseService = CatchAsyncError(async (data: any, res: Response) => {
-    const course = await courseModel.create(data);
-    res.status(201).json({
-        success: true,
-        course
-    })
+    try {
+        const course = await courseModel.create(data.data);
+        res.status(201).json({
+            success: true,
+            course
+        })
+    } catch (error) {
+        console.log(error)
+        return;
+    }
+
 })
 
 export const updateCourseService = CatchAsyncError(async (req: any, res: any, next: NextFunction) => {

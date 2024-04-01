@@ -1,13 +1,24 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CourseInfo from './CourseInfo'
 import CourseOptions from './CourseOptions'
 import CourseData from './CourseData'
 import CourseContent from './CourseContent'
 import CoursePreview from './CoursePreview'
+import { useCreateCourseMutation } from '@/redux/features/course/courseApi'
+import toast from 'react-hot-toast'
 
 const CreateCourse = () => {
     const [active, setActive] = useState(0)
+    const [createCourse, { isLoading, error, isSuccess }] = useCreateCourseMutation()
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success('Created Course Successfully')
+        }
+        if (error) {
+            toast.error((error as any)?.data?.message || 'Unknown Error Ocucured')
+        }
+    })
     const [courseInfo, setCourseInfp] = useState({
         name: "",
         description: "",
@@ -63,7 +74,12 @@ const CreateCourse = () => {
         }
         setCourseData(data)
     }
-
+    const handleCourseCreate = async () => {
+        console.log(courseData)
+        if (!isLoading) {
+            await createCourse(courseData)
+        }
+    }
     return (
         <div className='w-full flex min-h-screen'>
             <div className='w-[80%]'>
@@ -84,7 +100,7 @@ const CreateCourse = () => {
                 }
                 {
                     active === 3 && (
-                        <CoursePreview active={active} setActive={setActive} courseData={courseData} handleCourseCreate={handleSubmit} />
+                        <CoursePreview active={active} setActive={setActive} courseData={courseData} handleCourseCreate={handleCourseCreate} />
                     )
                 }
             </div>

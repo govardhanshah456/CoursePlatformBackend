@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 const courseRouter = express.Router()
-courseRouter.post('/create-course', isAuthenticated, authorizeRoles('admin'), createCourse)
+courseRouter.post('/create-course', updateAccessToken, isAuthenticated, authorizeRoles('admin', 'user'), createCourse)
 courseRouter.put('/update-course/:id', isAuthenticated, authorizeRoles('admin'), updateCourse)
 courseRouter.get('/get-course/:id', getCourseById, logoutUser);
 courseRouter.get('/get-all-courses', getAllCourses)
