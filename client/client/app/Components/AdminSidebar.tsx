@@ -208,7 +208,7 @@ const Sidebar = () => {
                         />
                         <Item
                             title="Published Courses"
-                            to="/admin/published-courses"
+                            to="/admin/courses"
                             icon={<OndemandVideoOutlined />}
                             selected={selected}
                             setSelected={setSelected}

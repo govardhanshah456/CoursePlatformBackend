@@ -1,15 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { DataGrid } from "@mui/x-data-grid"
 import { Box, Button } from "@mui/material"
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
 import { useTheme } from 'next-themes'
-import { useGetAllCoursesQuery } from '@/redux/features/course/courseApi'
+import { useDeleteCourseMutation, useGetAllCoursesQuery } from '@/redux/features/course/courseApi'
 import Loader from './Loader'
 import { format } from "timeago.js"
+import toast from 'react-hot-toast'
 type Props = {}
 
 const AllCourses = (props: Props) => {
     const { theme, setTheme } = useTheme();
+    const [courseId, setCourseId] = useState('')
+    const [deleteCourse, { isSuccess, error: deleteCourseError }] = useDeleteCourseMutation()
+    const handleCourseDelete = async (id: string) => {
+        console.log(id)
+        await deleteCourse(id);
+    }
+    useEffect(() => {
+        if (isSuccess) {
+            refetch()
+            toast.success("Deleted COurse");
+        }
+        if (deleteCourseError && "data" in deleteCourseError) {
+            toast.error((deleteCourseError as any)?.data?.message || "Some Error Occured While Deleting Course")
+        }
+    }, [])
     const columns = [
         { field: 'id', headerName: 'ID', flex: 0.5 },
         { field: 'title', headerName: 'Course Title', flex: 1 },
@@ -31,13 +47,13 @@ const AllCourses = (props: Props) => {
             }
         },
         {
-            field: "",
+            field: " ",
             headerName: "Delete",
             flex: 0.2,
             renderCell: (params: any) => {
                 return (
                     <>
-                        <Button>
+                        <Button onClick={() => { console.log(params.row); setCourseId(params.row.id); handleCourseDelete(params.row.id) }}>
                             <AiOutlineDelete className='dark:text-white text-black' size={20} />
                         </Button>
                     </>
@@ -45,9 +61,9 @@ const AllCourses = (props: Props) => {
             }
         }
     ]
-    const { isLoading, data, error } = useGetAllCoursesQuery({})
+    const { isLoading, data, error, refetch } = useGetAllCoursesQuery({}, { refetchOnMountOrArgChange: true })
     const rows: any[] = [];
-    data?.courses?.forEach((row: any) => {
+    data?.course?.forEach((row: any) => {
         const element = {
             id: row._id,
             title: row.name,
@@ -57,6 +73,7 @@ const AllCourses = (props: Props) => {
         }
         rows.push(element)
     })
+
     return (
         <div className='mt-[120px]'>
             {
@@ -77,10 +94,13 @@ const AllCourses = (props: Props) => {
                                 },
                                 "& .MuiDataGrid-row": {
                                     color: theme === "dark" ? "#fff" : "#000",
-                                    borderBottom: theme === "dark" ? '1px solid #ffffff30 !important' : "1px solid #ccc !important"
+                                    borderBottom: theme === "dark" ? '1px solid #ffffff30 !important' : "1px solid #ccc !important",
                                 },
                                 "& .MuiTablePagination-root": {
                                     color: theme === "dark" ? "#fff" : "#000"
+                                },
+                                "& .css-yrdy0g-MuiDataGrid-columnHeaderRow": {
+                                    backgroundColor: theme === "dark" ? "#3e4396 !important" : "#A4A9FC !important"
                                 },
                                 "& .MuiDataGrid-cell": {
                                     borderBottom: "none"

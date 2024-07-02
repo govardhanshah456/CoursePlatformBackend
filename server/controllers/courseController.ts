@@ -65,16 +65,16 @@ export const getCourseById = CatchAsyncError(async (req: Request, res: Response,
 
 export const getAllCourses = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const isCached = await redis.get("AllCoursesWithoutPurchase")
-        if (isCached) {
-            const course = JSON.parse(isCached);
-            res.status(200).json({
-                success: true,
-                course
-            })
-        }
-        else
-            getAllCoursesService(req, res, next);
+        // const isCached = await redis.get("AllCoursesWithoutPurchase")
+        // if (isCached) {
+        //     const course = JSON.parse(isCached);
+        //     res.status(200).json({
+        //         success: true,
+        //         course
+        //     })
+        // }
+        // else
+        getAllCoursesService(req, res, next);
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500))
     }
