@@ -13,7 +13,7 @@ const page = (props: Props) => {
         <div>
             {/* <AdminProtected> */}
             <Heading title='LearnZilla - Admin' description='LearnZilla Online Learning Platform' keywords='NA' />
-            <div className='flex h-screen'>
+            <div className='flex h-[100%]'>
                 <div className='1500px:w-[16%] w-1/5'>
                     <AdminSidebar />
                 </div>

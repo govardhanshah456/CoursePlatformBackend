@@ -55,6 +55,10 @@ const CourseData: React.FC<Props> = ({ benefits, setBenefits, prerequisites, set
         else
             toast.error('Please Fill All The Fields')
     }
+    const handlePrev = () => {
+        setActive(active - 1);
+
+    }
     return (
         <div className='w-[80%] m-auto mt-24 block'>
             <div>
@@ -85,9 +89,15 @@ const CourseData: React.FC<Props> = ({ benefits, setBenefits, prerequisites, set
                 }
                 <AddCircleOutline className='dark:text-white text-black' style={{ margin: "10px 0px", cursor: "pointer", width: "30px" }} onClick={(e) => handleAddBenefits(e, false)} />
             </div>
-            <div className='w-full flex items-center justify-end' onClick={handleNext}>
-                <input type='submit' value={"next"} className='w-full 800px:w-[100px] h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer' />
+            <div style={{ display: "flex" }}>
+                <div className='w-full flex items-center justify-start' onClick={handlePrev}>
+                    <input type='submit' value={"prev"} className='w-full 800px:w-[100px] h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer' />
+                </div>
+                <div className='w-full flex items-center justify-end' onClick={handleNext}>
+                    <input type='submit' value={"next"} className='w-full 800px:w-[100px] h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer' />
+                </div>
             </div>
+
         </div >
     )
 }

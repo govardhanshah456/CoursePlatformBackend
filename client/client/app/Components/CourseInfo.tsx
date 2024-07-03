@@ -50,6 +50,7 @@ const CourseInfo: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setAct
             reader.readAsDataURL(file)
         }
     }
+    console.log(courseInfo.thumbnail)
     return (
         <div className='w-[80%] m-auto mt-24'>
             <form onSubmit={handleSubmit} className={`${styles.label}`}>
@@ -106,7 +107,7 @@ const CourseInfo: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setAct
                         }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
                         {
                             courseInfo.thumbnail ? (
-                                <img src={courseInfo.thumbnail} alt="" className='max-h-full w-full object-cover' />
+                                <img src={courseInfo.thumbnail.url ? courseInfo.thumbnail.url : courseInfo.thumbnail} alt="" className='max-h-full w-full object-cover' />
                             ) : (
                                 <span className='text-black dark:text-white'>
                                     Drag and Drop thumbnail here or click to browse

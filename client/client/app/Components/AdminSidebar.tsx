@@ -100,7 +100,7 @@ const Sidebar = () => {
                     position: "fixed",
                     top: 0,
                     left: 0,
-                    height: "100vh",
+                    height: "100%",
                     zIndex: 99999999999999,
                     width: isCollapsed ? "0%" : "16%",
                 }}

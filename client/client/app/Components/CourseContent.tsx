@@ -23,6 +23,7 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
     const handleSubmit = () => {
 
     }
+    console.log(courseContentData)
     const handleCollapseToggle = (index: number) => {
         const updatedCollapsed = [...isCollapsed]
         updatedCollapsed[index] = !updatedCollapsed[index];
@@ -119,9 +120,12 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
     const handleOptions = () => {
         let isValid = [];
         isValid = courseContentData.map((courseContent: any) => {
-            const linksValid = courseContent.links.map((link: any) => {
-                return link.title != "" && link.url != ""
-            })
+            let linksValid = true;
+            if (courseContent.links && courseContent.links.length > 0) {
+                linksValid = courseContent.links?.map((link: any) => {
+                    return link.title != "" && link.url != ""
+                })
+            }
             return courseContent.title != "" && courseContent.description != "" && courseContent.videoUrl != "" && linksValid
         })
         let ok = true;
@@ -172,6 +176,7 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
         updatedData[index].links = updatedData[index].links.filter((link: any) => link.url != url)
         setCourseContentData(updatedData)
     }
+    console.log(courseContentData)
     return (
         <div className='w-[80%] m-auto mt-24 p-3'>
             <form onSubmit={handleSubmit}>
@@ -262,11 +267,13 @@ const CourseContent: FC<Props> = ({ active, setActive, courseContentData, setCou
                                                     <label className={`${styles.label}`}>Video Description</label>
                                                     <textarea rows={8} cols={30} placeholder='Description' className={`${styles.input} h-min`} value={item.description} onChange={(e) => {
                                                         const updatedData = [...courseContentData]
-                                                        updatedData[index].description = e.target.value
+                                                        console.log(updatedData[index])
+                                                        updatedData[index] = { ...updatedData[index], description: e.target.value }
                                                         setCourseContentData(updatedData)
                                                     }} />
                                                 </div>
                                                 <br />
+
                                                 <br />
                                                 {
                                                     index === courseContentData.length - 1 && (

@@ -5,20 +5,45 @@ import CourseOptions from './CourseOptions'
 import CourseData from './CourseData'
 import CourseContent from './CourseContent'
 import CoursePreview from './CoursePreview'
-import { useCreateCourseMutation } from '@/redux/features/course/courseApi'
+import { useCreateCourseMutation, useEditCourseMutation, useGetAllCoursesQuery } from '@/redux/features/course/courseApi'
 import toast from 'react-hot-toast'
-
-const CreateCourse = () => {
+type Props = {
+    id: string
+}
+const EditCourse = ({ id }: Props) => {
+    console.log(id)
     const [active, setActive] = useState(0)
-    const [createCourse, { isLoading, error, isSuccess }] = useCreateCourseMutation()
+    // const [createCourse, { isLoading, error, isSuccess }] = useCreateCourseMutation()
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccessCourse) {
             toast.success('Created Course Successfully')
         }
-        if (error) {
-            toast.error((error as any)?.data?.message || 'Unknown Error Ocucured')
+        if (editCourseError) {
+            toast.error((editCourseError as any)?.data?.message || 'Unknown Error Ocucured')
         }
     })
+    const { isLoading, data, error, refetch } = useGetAllCoursesQuery({}, { refetchOnMountOrArgChange: true })
+    const [editCourse, { error: editCourseError, isSuccess: isSuccessCourse }] = useEditCourseMutation({})
+
+    const editCourseData = data?.course?.find((course: any) => course._id === id)
+    useEffect(() => {
+        if (editCourseData) {
+            setCourseInfp({
+                name: editCourseData.name,
+                description: editCourseData.description,
+                price: editCourseData.price,
+                estimatedPrice: editCourseData.estimatedPrice,
+                tags: editCourseData.tags,
+                level: editCourseData.level,
+                demoUrl: editCourseData.demoUrl,
+                thumbnail: editCourseData.thumbnail ?? null
+            })
+            setBenefits(editCourseData.benefits)
+            setPrerequisites(editCourseData.prerequisites)
+            setCourseContentData(editCourseData.courseData)
+        }
+    }, [editCourseData])
+    console.log(editCourseData)
     const [courseInfo, setCourseInfp] = useState({
         name: "",
         description: "",
@@ -53,11 +78,12 @@ const CreateCourse = () => {
         const formattedCourseContentData = courseContentData.map((CourseContent: any) => ({
             videoUrl: CourseContent.videoUrl,
             title: CourseContent.title,
-            description: CourseContent.descrition,
+            description: CourseContent.description,
             videoSection: CourseContent.videoSection,
             links: CourseContent.links,
             suggestion: CourseContent.suggestion
         }))
+        console.log(courseContentData)
         const data = {
             name: courseInfo.name,
             description: courseInfo.description,
@@ -77,7 +103,7 @@ const CreateCourse = () => {
     const handleCourseCreate = async () => {
         console.log(courseData)
         if (!isLoading) {
-            await createCourse(courseData)
+            await editCourse({ courseData, id })
         }
     }
     return (
@@ -111,4 +137,4 @@ const CreateCourse = () => {
     )
 }
 
-export default CreateCourse
+export default EditCourse

@@ -29,9 +29,14 @@ export const createCourse = CatchAsyncError(async (req: Request, res: Response, 
 export const updateCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = req.body
+        console.log(data)
         const thumbnail = data.thumbnail;
-        if (thumbnail) {
-            await cloudinary.v2.uploader.destroy(thumbnail.public_id);
+        const courseId = req.params.id;
+        const course = await courseModel.findById(courseId).lean();
+        const oldThumbnail: any = course?.thumbnail
+        if (thumbnail && !thumbnail.startsWith("http")) {
+            if (oldThumbnail)
+                await cloudinary.v2.uploader.destroy(oldThumbnail?.public_id);
             const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
                 folder: "courses"
             })

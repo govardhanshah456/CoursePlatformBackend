@@ -20,6 +20,7 @@ export const createCourseService = CatchAsyncError(async (data: any, res: Respon
 export const updateCourseService = CatchAsyncError(async (req: any, res: any, next: NextFunction) => {
     const data = req.body;
     const courseId = req.params.id
+    console.log(data)
     const course = await courseModel.findByIdAndUpdate(courseId, {
         $set: data
     }, {
@@ -53,6 +54,6 @@ export const getAllCoursesServiceFull = async (res: Response) => {
     const user = await courseModel.find();
     res.status(200).json({
         success: true,
-        user
+        course: user
     })
 }

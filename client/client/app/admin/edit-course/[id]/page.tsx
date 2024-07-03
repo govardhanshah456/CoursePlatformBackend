@@ -6,9 +6,12 @@ import AdminProtected from '@/app/hooks/adminProtected'
 import AdminSidebar from "@/app/Components/AdminSidebar"
 import React from 'react'
 import AllUsers from '@/app/Components/AllUsers'
+import EditCourse from '@/app/Components/EditCourse'
+import { useParams, useSearchParams } from 'next/navigation'
 type Props = {}
 
-const page = (props: Props) => {
+const Page = () => {
+    const params = useParams()
     return (
         <div>
             {/* <AdminProtected> */}
@@ -19,11 +22,11 @@ const page = (props: Props) => {
                 </div>
                 <div className='w-[85%]'>
                     <DashboardHero />
-                    <AllUsers isAdmin={true} />
+                    <EditCourse id={params.id as string} />
                 </div>
             </div>
-            {/* </AdminProtected>s */}
+            {/* </AdminProtected> */}
         </div>
     )
 }
-export default page
+export default Page

@@ -7,6 +7,7 @@ import { useDeleteCourseMutation, useGetAllCoursesQuery } from '@/redux/features
 import Loader from './Loader'
 import { format } from "timeago.js"
 import toast from 'react-hot-toast'
+import Link from 'next/link'
 type Props = {}
 
 const AllCourses = (props: Props) => {
@@ -33,21 +34,21 @@ const AllCourses = (props: Props) => {
         { field: 'purchased', headerName: 'Purchased', flex: 0.5 },
         { field: 'created_at', headerName: 'Created At', flex: 0.5 },
         {
-            field: "",
+            field: " ",
             headerName: "Edit",
             flex: 0.2,
             renderCell: (params: any) => {
                 return (
-                    <>
-                        <Button>
+                    <div style={{ marginTop: "15px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <Link href={`/admin/edit-course/${params.row.id}`}>
                             <AiOutlineEdit className='dark:text-white text-black' size={20} />
-                        </Button>
-                    </>
+                        </Link>
+                    </div>
                 )
             }
         },
         {
-            field: " ",
+            field: "  ",
             headerName: "Delete",
             flex: 0.2,
             renderCell: (params: any) => {
@@ -98,6 +99,11 @@ const AllCourses = (props: Props) => {
                                 },
                                 "& .MuiTablePagination-root": {
                                     color: theme === "dark" ? "#fff" : "#000"
+                                },
+                                "& .MuiDataGrid-cell .MuiDataGrid-cell--textLeft": {
+                                    display: "flex",
+                                    flexDirection: 'column',
+                                    justifyContent: 'center'
                                 },
                                 "& .css-yrdy0g-MuiDataGrid-columnHeaderRow": {
                                     backgroundColor: theme === "dark" ? "#3e4396 !important" : "#A4A9FC !important"
