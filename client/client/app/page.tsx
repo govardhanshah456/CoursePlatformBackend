@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import Heading from './Components/Heading';
 import Header from './Components/Header';
+import Hero from './Components/Hero';
 
 const Page = () => {
   const [open, setOpen] = useState(false);
@@ -12,6 +13,7 @@ const Page = () => {
     <div>
       <Heading title='LearnEasy' description='Upgrade your skills with Learn easy' keywords='Programming,MERN,ML,Redux' />
       <Header route={route} setRoute={setRoute} open={open} setOpen={setOpen} activeItem={activeItem} />
+      <Hero />
     </div>
   )
 }

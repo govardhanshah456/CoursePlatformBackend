@@ -57,7 +57,7 @@ const Header: React.FC<Props> = ({ open, setOpen, route, setRoute, activeItem })
             </div>
             {
                 route === 'Login' && (
-                    <>
+                    <div>
                         {
                             open && (
                                 <CustomModal
@@ -69,12 +69,12 @@ const Header: React.FC<Props> = ({ open, setOpen, route, setRoute, activeItem })
                                 />
                             )
                         }
-                    </>
+                    </div>
                 )
             }
             {
                 route === 'signup' && (
-                    <>
+                    <div>
                         {
                             open && (
                                 <CustomModal
@@ -86,12 +86,12 @@ const Header: React.FC<Props> = ({ open, setOpen, route, setRoute, activeItem })
                                 />
                             )
                         }
-                    </>
+                    </div>
                 )
             }
             {
                 route === 'verification' && (
-                    <>
+                    <div>
                         {
                             open && (
                                 <CustomModal
@@ -103,7 +103,7 @@ const Header: React.FC<Props> = ({ open, setOpen, route, setRoute, activeItem })
                                 />
                             )
                         }
-                    </>
+                    </div>
                 )
             }
         </div>
