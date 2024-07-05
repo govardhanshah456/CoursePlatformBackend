@@ -55,7 +55,7 @@ const AllUsers = ({ isAdmin }: Props) => {
     const rows: any[] = [];
     let NewData = data?.user;
     if (isAdmin) {
-        NewData = NewData.filter((user: any) => user.role === 'admin')
+        NewData = NewData?.filter((user: any) => user.role === 'admin')
     }
     NewData?.forEach((row: any) => {
         const element = {

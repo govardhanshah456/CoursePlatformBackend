@@ -68,7 +68,7 @@ const getActivationCode = (user: IRegistrationBody) => {
         user, activationCode
     }, process.env.ACTIVATION_SECRET as Secret,
         {
-            expiresIn: "5m"
+            expiresIn: "7*24*60*60s"
         })
     return { activationCode, token }
 }

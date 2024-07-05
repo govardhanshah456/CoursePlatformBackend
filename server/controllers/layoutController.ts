@@ -18,12 +18,14 @@ export const createLayout = CatchAsyncError(async (req: Request, res: Response, 
             })
             const banner = {
                 type: LayoutOptions.BANNER,
-                image: {
-                    public_id: myCloud.public_id,
-                    url: myCloud.secure_url
-                },
-                title,
-                subTitle
+                banner: {
+                    image: {
+                        public_id: myCloud.public_id,
+                        url: myCloud.secure_url
+                    },
+                    title,
+                    subTitle
+                }
             }
             await layoutModel.create(banner)
         }
@@ -60,18 +62,18 @@ export const editLayout = CatchAsyncError(async (req: Request, res: Response, ne
         const normalizedType = type.toLowerCase()
         if (normalizedType === LayoutOptions.BANNER) {
             const bannerData: any = await layoutModel.findOne({ type: LayoutOptions.BANNER })
-            if (bannerData) {
-                await cloudinary.v2.uploader.destroy(bannerData.image.public_id)
-            }
+
             const { image, title, subTitle } = req.body;
-            const myCloud = await cloudinary.v2.uploader.upload(image, {
+            const stringImg = (image.url) ?? ''
+            const data = stringImg.startsWith("http") ? bannerData : await cloudinary.v2.uploader.upload(image, {
                 folder: "layout"
             })
+
             const banner = {
                 type: LayoutOptions.BANNER,
                 image: {
-                    public_id: myCloud.public_id,
-                    url: myCloud.secure_url
+                    public_id: stringImg.startsWith("http") ? bannerData?.banner.image.public_id : data.public_id,
+                    url: stringImg.startsWith("http") ? bannerData?.banner.image.url : data.secure_url
                 },
                 title,
                 subTitle
@@ -111,7 +113,8 @@ export const getLayoutByType = CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { type } = req.params;
-            const layout = await layoutModel.findOne({ type });
+            const loweredCaseType = type.toLowerCase();
+            const layout = await layoutModel.findOne({ type: loweredCaseType });
             res.status(201).json({
                 success: true,
                 layout
