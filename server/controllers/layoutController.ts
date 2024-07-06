@@ -89,6 +89,9 @@ export const editLayout = CatchAsyncError(async (req: Request, res: Response, ne
                     answer: item.answer
                 }
             }))
+            if (!faqItems) {
+                await layoutModel.create({ faq: FaqItems, type: LayoutOptions.FAQ })
+            }
             await layoutModel.findByIdAndUpdate(faqItems?._id, { faq: FaqItems, type: LayoutOptions.FAQ })
         }
         if (normalizedType === LayoutOptions.CATEGORIES) {
