@@ -27,7 +27,8 @@ const CreateCourse = () => {
         tags: "",
         level: "",
         demoUrl: "",
-        thumbnail: ""
+        thumbnail: "",
+        categories: ""
     })
     const [benefits, setBenefits] = useState([{ title: "" }])
     const [prerequisites, setPrerequisites] = useState([{ title: "" }])
@@ -43,7 +44,8 @@ const CreateCourse = () => {
                     url: ""
                 },
             ],
-            suggestion: ""
+            suggestion: "",
+            videoLength: ""
         }
     ])
     const [courseData, setCourseData] = useState({})
@@ -56,7 +58,8 @@ const CreateCourse = () => {
             description: CourseContent.descrition,
             videoSection: CourseContent.videoSection,
             links: CourseContent.links,
-            suggestion: CourseContent.suggestion
+            suggestion: CourseContent.suggestion,
+            videoLength: CourseContent.videoLength
         }))
         const data = {
             name: courseInfo.name,
@@ -70,7 +73,8 @@ const CreateCourse = () => {
             totalVideos: courseContentData.length,
             benefits: formattedBenefits,
             prerequisites: formattedPrerequisites,
-            courseData: formattedCourseContentData
+            courseData: formattedCourseContentData,
+            categories: courseInfo.categories
         }
         setCourseData(data)
     }

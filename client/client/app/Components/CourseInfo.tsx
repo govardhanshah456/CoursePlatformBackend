@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { styles } from '../Styles/styles';
 import Image from 'next/image';
+import { useGetHeroDataQuery } from '@/redux/features/layout/layoutApi';
 
 type Props = {
     courseInfo: any;
@@ -28,6 +29,15 @@ const CourseInfo: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setAct
         }
 
     }
+    const { data } = useGetHeroDataQuery("categories", {
+        refetchOnMountOrArgChange: true
+    })
+    const [categoriesResponse, setCategoriesResponse] = useState<any[]>([]);
+    useEffect(() => {
+        if (data?.layout?.categories) {
+            setCategoriesResponse(data?.layout?.categories || [])
+        }
+    }, [data])
     const handleDragOver = (e: any) => {
         e.preventDefault()
         setDragging(true)
@@ -86,6 +96,23 @@ const CourseInfo: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setAct
                     <input type='text' name='' value={courseInfo.tags} onChange={(e) => setCourseInfo({ ...courseInfo, tags: e.target.value })} id='tags' placeholder='ML,MERN' className={`${styles.input}`} />
                 </div>
                 <br />
+                <div className='w-[50%]'>
+                    <label className={`w-[45%] ${styles.label}`}>
+                        Course Categories
+                    </label>
+                    <select name="" id="" className={styles.input} value={courseInfo.category} onChange={(e: any) => setCourseInfo({ ...courseInfo, category: e.target.value })}>
+                        <option value="">Select Categories</option>
+                        {
+                            categoriesResponse.map((cat) => (
+                                <option value={cat.title} key={cat._id}>
+                                    {cat._id}
+                                </option>
+                            ))
+                        }
+                    </select>
+                </div>
+                <br />
+
                 <div className='w-full flex justify-between'>
                     <div>
                         <label className={`w-[45%] ${styles.label}`}>
