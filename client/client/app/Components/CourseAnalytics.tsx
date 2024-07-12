@@ -29,7 +29,7 @@ const CourseAnalytics = (props: Props) => {
                 isLoading ? (
                     <Loader />
                 ) : (
-                    <div className='h-screen'>
+                    <div className='h-screen flex flex-col'>
                         <div className='mt-[150px]'>
                             <h1 className={`${styles.title} px-5 !text-start`}>
                                 Course Analytics

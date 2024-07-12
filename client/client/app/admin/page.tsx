@@ -15,7 +15,7 @@ const page = () => {
                     <AdminSidebar />
                 </div>
                 <div className='w-[65%]'>
-                    <DashboardHero />
+                    <DashboardHero isDashboard={true} />
                 </div>
             </div>
             {/* </AdminProtected> */}

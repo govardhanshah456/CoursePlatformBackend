@@ -7,7 +7,7 @@ import DashboardHero from '../../Components/DashboardHero'
 import EditHero from '@/app/Components/EditHero'
 import EditFaq from '@/app/Components/EditFaq'
 import CourseAnalytics from '@/app/Components/CourseAnalytics'
-import OrderAnalytics from '@/app/Components/OrderAnalytics'
+import UsersAnalytics from '@/app/Components/UsersAnalytics'
 
 const page = () => {
     return (
@@ -20,7 +20,7 @@ const page = () => {
                 </div>
                 <div className='w-[85%]'>
                     <DashboardHero />
-                    <OrderAnalytics />
+                    <UsersAnalytics />
 
                 </div>
             </div>
