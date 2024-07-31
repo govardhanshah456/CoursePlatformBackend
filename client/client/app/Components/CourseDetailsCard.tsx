@@ -4,6 +4,7 @@ import Ratings from './Ratings'
 import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import Link from 'next/link'
 import { styles } from '../Styles/styles'
+import CourseCOntentList from './CourseCOntentList'
 
 type Props = {
     data: any
@@ -66,6 +67,7 @@ const CourseDetailsCard: React.FC<Props> = ({ data }: Props) => {
                                 <h1 className='text-[25px] font-Poppins font-[600] text-black dark:text-white'>
                                     Course Overview
                                 </h1>
+                                <CourseCOntentList data={data?.courseData} isDemo={true} />
                             </div>
                             <br />
                             <br />

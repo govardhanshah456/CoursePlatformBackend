@@ -1,3 +1,4 @@
+import CourseContentFull from '@/app/Components/CourseContentFull';
 import Loader from '@/app/Components/Loader';
 import { useLoadUserQuery } from '@/redux/features/api/apiSlice';
 import { redirect } from 'next/navigation';
@@ -24,7 +25,7 @@ const Page = ({ params }: Props) => {
                 isLoading ? (
                     <Loader />
                 ) : (
-                    <CourseContentFull />
+                    <CourseContentFull id={id} />
                 )
             }
         </>
