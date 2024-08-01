@@ -7,10 +7,11 @@ import Header from './Header'
 import CourseCOntentList from './CourseCOntentList'
 
 type Props = {
-    id: string
+    id: string;
+    user: any;
 }
 
-const CourseContentFull: React.FC<Props> = ({ id }: Props) => {
+const CourseContentFull: React.FC<Props> = ({ id, user }: Props) => {
     const { data, isLoading } = useGetCourseContentQuery(id)
     const courseContentData = data?.content
     const [open, setOpen] = useState(false)
@@ -27,7 +28,7 @@ const CourseContentFull: React.FC<Props> = ({ id }: Props) => {
                         <div className='w-full grid 800px:grid-cols-0'>
                             <Heading title={data[activeVideo]?.title} description="God Knows I Want to Break Free" keywords={data[activeVideo]?.tags} />
                             <div className='col-span-7'>
-                                <CourseContentMedia data={courseContentData} id={id} activeVideo={activeVideo} setActiveVideo={setActiveVideo} />
+                                <CourseContentMedia data={courseContentData} id={id} activeVideo={activeVideo} setActiveVideo={setActiveVideo} user={user} />
                             </div>
                             <div className='hidden 800px:block 800px:col-span-3'>
                                 <CourseCOntentList setActiveVide={setActiveVideo} data={data} activeVideo={activeVideo} />

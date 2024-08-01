@@ -25,7 +25,7 @@ const Page = ({ params }: Props) => {
                 isLoading ? (
                     <Loader />
                 ) : (
-                    <CourseContentFull id={id} />
+                    <CourseContentFull id={id} user={data} />
                 )
             }
         </>

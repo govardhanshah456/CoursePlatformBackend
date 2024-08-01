@@ -1,16 +1,23 @@
 import React, { useState } from 'react'
 import { styles } from '../Styles/styles';
-import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
+import { AiFillStar, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineStar } from 'react-icons/ai';
+import Image from 'next/image';
+import lena512color from "../../public/lena512color.jpg"
 
 type Props = {
     data: any;
     id: string;
     activeVideo: number;
     setActiveVideo: (activeVideo: number) => void;
+    user?: any;
 }
 
-const CourseContentMedia: React.FC<Props> = ({ data, id, activeVideo, setActiveVideo }: Props) => {
+const CourseContentMedia: React.FC<Props> = ({ data, user, id, activeVideo, setActiveVideo }: Props) => {
     const [activeBar, setActiveBar] = useState(0)
+    const [comment, setComment] = useState("");
+    const [review, setReview] = useState("")
+    const hasReviewed = data?.reviews?.some((review: any) => review?.user?._id === user?._id)
+    const [rating, setRating] = useState(0)
     return (
         <div className='w-[95%] 800px:w-[86%] py-4 m-auto'>
             {data[activeVideo]?.title}
@@ -63,7 +70,53 @@ const CourseContentMedia: React.FC<Props> = ({ data, id, activeVideo, setActiveV
             }
             {
                 activeBar === 2 && (
-                    <div></div>
+                    <>
+                        <div className='flex w-full'>
+                            <Image src={user?.avatar?.url || lena512color} width={50} height={50} alt='' className='w-[50px] h-[50px] rounded-full object-cover' />
+                            <textarea name='' value={comment} onChange={(e) => setComment(e.target.value)} id="" cols={40} rows={5} placeholder='write your question' className='outline-none bg-transparent ml-3 border-[#ffffff57] 800px:w-full p-2 rounded w-[90%] 800px:text-[18px] font-Poppins' />
+                        </div>
+                        <div className={`${styles.button} !w-[120px] !h-[40px] text-[18px] mt-5`}>
+                            Submit
+                        </div>
+                        <br />
+                        <br />
+
+                    </>
+                )
+            }
+            {
+                activeBar === 3 && (
+                    <>
+                        <div className='w-full'>
+                            {
+                                !hasReviewed && (
+                                    <>
+                                        <div className='w-full flex'>
+                                            <Image src={user?.avatar?.url || lena512color} width={50} height={50} alt='' className='w-[50px] h-[50px] rounded-full object-cover' />
+                                            <div className='w-full'>
+                                                <h5 className='pl-3 text-[20px] font-[500] dark:text-white text-black'>Give a rating <span className='text-red-500'>*</span></h5>
+                                                <div className='flex w-full ml-2 pb-2'>
+                                                    {
+                                                        [1, 2, 3, 4, 5].map((i) => rating >= i ? (
+                                                            <AiFillStar key={i} className='mr-1 cursor-pointer' color='rgb(246,186,0)' size={25} onClick={() => setRating(i)} />
+                                                        ) : (
+                                                            <AiOutlineStar key={i} className='mr-1 cursor-pointer' color='rgb(246,186,0)' size={25} onClick={() => setRating(i)} />
+                                                        ))
+                                                    }
+                                                </div>
+                                                <textarea name='' value={review} onChange={(e) => setReview(e.target.value)} id="" cols={40} rows={5} placeholder='write your question' className='outline-none bg-transparent ml-3 border-[#ffffff57] 800px:w-full p-2 rounded w-[90%] 800px:text-[18px] font-Poppins' />
+                                            </div>
+                                        </div>
+                                        <div className='w-full flex justify-end'>
+                                            <div className={`${styles.button} !w-[120px] !h-[40px] text-[18px] mt-5`}>
+                                                Submit
+                                            </div>
+                                        </div>
+                                    </>
+                                )
+                            }
+                        </div>
+                    </>
                 )
             }
         </div>
