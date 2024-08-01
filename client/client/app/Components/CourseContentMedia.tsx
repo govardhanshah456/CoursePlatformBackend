@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { styles } from '../Styles/styles';
 import { AiFillStar, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineStar } from 'react-icons/ai';
 import Image from 'next/image';
 import lena512color from "../../public/lena512color.jpg"
+import toast from 'react-hot-toast';
+import { useAddNewAnswerMutation, useAddNewQuestionMutation } from '@/redux/features/course/courseApi';
+import { BiMessage } from 'react-icons/bi';
 
 type Props = {
     data: any;
@@ -10,14 +13,53 @@ type Props = {
     activeVideo: number;
     setActiveVideo: (activeVideo: number) => void;
     user?: any;
+    refetch?: any;
 }
 
-const CourseContentMedia: React.FC<Props> = ({ data, user, id, activeVideo, setActiveVideo }: Props) => {
+const CourseContentMedia: React.FC<Props> = ({ data, refetch, user, id, activeVideo, setActiveVideo }: Props) => {
     const [activeBar, setActiveBar] = useState(0)
     const [comment, setComment] = useState("");
     const [review, setReview] = useState("")
     const hasReviewed = data?.reviews?.some((review: any) => review?.user?._id === user?._id)
     const [rating, setRating] = useState(0)
+    const [addNewQuestion, { isSuccess, error, isLoading: questionLoading }] = useAddNewQuestionMutation()
+    const [addNewAnswer, { isSuccess: answerSuccess, error: answerError, isLoading: answerLoading }] = useAddNewAnswerMutation()
+    const handleQuestion = () => {
+        if (comment.length === 0) {
+            toast.error("Question can't be Empty!")
+        }
+        else {
+            addNewQuestion({ question: comment, courseId: id, contentId: data[activeVideo]._id })
+        }
+    }
+    const handleAnswerSubmit = () => {
+        if (answer.length === 0) {
+            toast.error("Answer can't be Empty!")
+        }
+        else {
+            addNewAnswer({ answer, courseId: id, contentId: data[activeVideo]._id, questionId: answerId })
+        }
+    }
+    const [answer, setAnswer] = useState("");
+    const [answerId, setAnswerId] = useState(0);
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Question Added Successfully");
+            refetch()
+        }
+        if (error) {
+            toast.error((error as any)?.data?.message || "Error while adding question")
+        }
+    }, [isSuccess, error, refetch])
+    useEffect(() => {
+        if (answerSuccess) {
+            toast.success("Answer Added Successfully");
+            refetch()
+        }
+        if (answerError) {
+            toast.error((answerError as any)?.data?.message || "Error while adding question")
+        }
+    }, [answerSuccess, answerError, refetch])
     return (
         <div className='w-[95%] 800px:w-[86%] py-4 m-auto'>
             {data[activeVideo]?.title}
@@ -75,12 +117,15 @@ const CourseContentMedia: React.FC<Props> = ({ data, user, id, activeVideo, setA
                             <Image src={user?.avatar?.url || lena512color} width={50} height={50} alt='' className='w-[50px] h-[50px] rounded-full object-cover' />
                             <textarea name='' value={comment} onChange={(e) => setComment(e.target.value)} id="" cols={40} rows={5} placeholder='write your question' className='outline-none bg-transparent ml-3 border-[#ffffff57] 800px:w-full p-2 rounded w-[90%] 800px:text-[18px] font-Poppins' />
                         </div>
-                        <div className={`${styles.button} !w-[120px] !h-[40px] text-[18px] mt-5`}>
+                        <div onClick={questionLoading ? () => { } : handleQuestion} className={`${styles.button} !w-[120px] !h-[40px] text-[18px] mt-5 ${questionLoading ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                             Submit
                         </div>
                         <br />
                         <br />
-
+                        <div className='w-full h-[1px] bg-[#ffffff3b]'></div>
+                        <div>
+                            <CommentReply data={data} activeVideo={activeVideo} answer={answer} setAnswer={setAnswer} handleAnswerSubmit={handleAnswerSubmit} user={user} setAnswerId={setAnswerId} />
+                        </div>
                     </>
                 )
             }
@@ -124,3 +169,76 @@ const CourseContentMedia: React.FC<Props> = ({ data, user, id, activeVideo, setA
 }
 
 export default CourseContentMedia
+
+const CommentReply = ({ data, activeVideo, answer, setAnswer, handleAnswerSubmit, user, setAnswerId }: any) => {
+    return (
+        <>
+            <div className='w-full my-3'>
+                {
+                    data[activeVideo]?.questions?.map((item: any, index: number) => (
+                        <CommentItem setAnswerId={setAnswerId} key={index} data={data} activeVideo={activeVideo} item={item} index={index} answer={answer} setAnswer={setAnswer} handleAnswerSubmit={handleAnswerSubmit} />
+                    ))
+                }
+            </div>
+        </>
+    )
+}
+
+const CommentItem = ({ data, setAnswerId, activeVideo, item, index, answer, setAnswer, handleAnswerSubmit }: any) => {
+    const [reply, setReply] = useState(false)
+    return (
+        <>
+            <div className='my-4'>
+                <div className='flex mb-2'>
+                    <div>
+                        <Image src={item?.user?.avatar?.url || lena512color} width={50} height={50} alt='' className='w-[50px] h-[50px] rounded-full object-cover' />
+
+                    </div>
+                    <div className='w-[50px] h-[50px]'>
+                        <div className='w-[50px] h-[50px] bg-slate-600 rounded-[50px] flex items-center justify-center cursor-pointer'>
+                            <h1 className='uppercase text-[18px]'>
+                                {item?.user?.name?.slice(0, 2)}
+                            </h1>
+                        </div>
+                    </div>
+                    <div className='pl-3 text-black dark:text-white'>
+                        <h5 className='text-[20px]'>{item?.user?.name}</h5>
+                        <p>{item?.question}</p>
+                    </div>
+                </div>
+                <div className='w-full flex'>
+                    <span onClick={() => { setReply(!reply); setAnswerId(item._id) }} className='800px:pl-16 text-black dark:text-white cursor-pointer mr-2'>
+                        {!reply ? item?.questionReplies.length !== 0 ? "All Replies" : "Add Reply" : "Hide Replies"}
+                    </span>
+                    <BiMessage size={20} className='cursor-pointer dark:text-white text-black' />
+                    <span className='pl-1 mt-[-4px] cursor-pointer dark:text-white text-black'>
+                        {item?.questionReplies?.length}
+                    </span>
+                </div>
+                {
+                    reply && (
+                        item?.questionReplies?.map((item: any, index1: number) => (
+                            <>
+                                <div key={index1} className='w-full flex 800px:ml-16 my-5 text-black dark:text-white'>
+                                    <div>
+                                        <Image src={item?.user?.avatar?.url || lena512color} width={50} height={50} alt='' className='w-[50px] h-[50px] rounded-full object-cover' />
+                                    </div>
+                                    <div className='pl-2'>
+                                        <h5 className='text-[20px]'>{item?.user?.name}</h5>
+                                        <p>{item.answer}</p>
+                                    </div>
+                                </div>
+                            </>
+                        ))
+                    )
+                }
+                <>
+                    <div className='w-full flex relative dark:text-white text-black'>
+                        <input type='text' placeholder='Enter your answer...' value={answer} onChange={(e) => setAnswer(e.target.value)} className='block 800px:ml-12 mt-2 outline-none bg-transparent border-b border-[#00000027] dark:text-white text-black dark:border-[#fff] p-[5px] w-[95%]' />
+                        <button className='absolute right-0 bottom-1' type='submit' onClick={handleAnswerSubmit} disabled={answer === ''}>Submit</button>
+                    </div>
+                </>
+            </div>
+        </>
+    )
+} 
