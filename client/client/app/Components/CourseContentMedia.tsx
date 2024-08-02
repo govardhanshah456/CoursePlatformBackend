@@ -7,7 +7,9 @@ import toast from 'react-hot-toast';
 import { useAddNewAnswerMutation, useAddNewQuestionMutation, useAddReplyToReviewMutation, useAddReviewMutation, useGetCourseDetailsQuery } from '@/redux/features/course/courseApi';
 import { BiMessage } from 'react-icons/bi';
 import Ratings from './Ratings';
-
+import socketIo from "socket.io-client"
+const socketUrl = process.env.NEXT_WEB_SOCKET_SERVER_URI || ''
+const socketId = socketIo(socketUrl, { transports: ["wesSocket"] })
 type Props = {
     data: any;
     id: string;
@@ -52,11 +54,16 @@ const CourseContentMedia: React.FC<Props> = ({ data, refetch, user, id, activeVi
             setComment("")
             toast.success("Question Added Successfully");
             refetch()
+            socketId.emit("sendNotification", {
+                title: "New Question Received",
+                message: `You have a new question in ${data[activeVideo]?.title}`,
+                userId: user._id
+            })
         }
         if (error) {
             toast.error((error as any)?.data?.message || "Error while adding question")
         }
-    }, [isSuccess, error, refetch])
+    }, [isSuccess, error, refetch, data, activeVideo, user._id])
     const [addReview, { isLoading: reviewLoading, isSuccess: reviewSuccess, error: reviewError }] = useAddReviewMutation()
     useEffect(() => {
         if (answerSuccess) {
@@ -64,11 +71,18 @@ const CourseContentMedia: React.FC<Props> = ({ data, refetch, user, id, activeVi
             setAnswerId(-1)
             toast.success("Answer Added Successfully");
             refetch()
+            if (user?.role !== "admin") {
+                socketId.emit("sendNotification", {
+                    title: "New Question Reply Received",
+                    message: `You have a new reply on question ${data[activeVideo]?.title}`,
+                    userId: user._id
+                })
+            }
         }
         if (answerError) {
             toast.error((answerError as any)?.data?.message || "Error while adding answer")
         }
-    }, [answerSuccess, answerError, refetch])
+    }, [answerSuccess, answerError, refetch, user?.role, user._id, data, activeVideo])
     const handleReviewSubmit = () => {
         if (review.length === 0) {
             toast.error("Review can't be empty!")
@@ -83,12 +97,17 @@ const CourseContentMedia: React.FC<Props> = ({ data, refetch, user, id, activeVi
             setReview("");
             setRating(0)
             refetchOnCourseCahnge()
+            socketId.emit("sendNotification", {
+                title: "New Review Received",
+                message: `You have a new review in ${data[activeVideo]?.title}`,
+                userId: user._id
+            })
 
         }
         if (reviewError) {
             toast.error((reviewError as any)?.data?.message || "Error while adding Review")
         }
-    }, [refetchOnCourseCahnge, reviewSuccess, reviewError])
+    }, [refetchOnCourseCahnge, reviewSuccess, reviewError, data, activeVideo, user._id])
     const [reviewId, setReviewId] = useState("")
     const [addReplyToReview, { isSuccess: replySuccess, isLoading: replyLoading, error: replyError }] = useAddReplyToReviewMutation()
     const handleReplySubmit = () => {
