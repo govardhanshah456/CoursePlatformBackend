@@ -194,6 +194,7 @@ export const addReview = CatchAsyncError(async (req: Request, res: Response, nex
             course.ratings = avg / course.reviews.length
         }
         await course?.save();
+        await redis.set(courseId, JSON.stringify(course), "EX", 604800)
         const notification = {
             title: 'New Review Received',
             description: `${req.user?.name} has given a review in ${course?.name}`

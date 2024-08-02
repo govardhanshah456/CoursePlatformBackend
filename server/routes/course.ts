@@ -23,7 +23,7 @@ courseRouter.get('/get-course-content/:id', isAuthenticated, getCourseByUser);
 courseRouter.put('/add-question', isAuthenticated, addQuestion);
 courseRouter.put('/add-answer', isAuthenticated, answerQuestion);
 courseRouter.put('/add-review/:id', isAuthenticated, addReview);
-courseRouter.put('/add-review-reply/:id', isAuthenticated, authorizeRoles('admin'), addReviewReply);
+courseRouter.put('/add-review-reply', isAuthenticated, authorizeRoles('admin'), addReviewReply);
 courseRouter.get('/get-all-courses-full', isAuthenticated, authorizeRoles('admin'), getAllCoursesFull);
 courseRouter.delete('/delete-course/:id', isAuthenticated, authorizeRoles('admin'), deleteCourse);
 courseRouter.post('/upload-video', upload.single('file'), videoUpload);
